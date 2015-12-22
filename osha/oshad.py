@@ -1,8 +1,8 @@
 #__author__ = 'saad'
-from daemon import Daemon
 import sys
 import logging as log
 import time
+from osha.common.daemon import Daemon
 log.basicConfig(filename='osha.log')
 
 
@@ -35,3 +35,7 @@ if __name__ == '__main__':
     else:
         print "Usage %s start|stop|restart" % sys.argv[0]
         sys.exit(0)
+
+
+
+
