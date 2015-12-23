@@ -23,19 +23,16 @@ class FencerBaseDriver(object):
     unified interface and as many plugins as we want...
     """
 
-    def __init__(self, node_ip, node_username, node_password, **kwargs):
+    def __init__(self, node, **kwargs):
         """
         Initializing the driver. Any fencer driver requires the following
         parameters to do the api calls. All these parameters can be passed from
         the configuration file in /etc/osha/osha.conf (default)
-        :param credentials_file: path to the credentials file
-        (/etc/osha/servers.yml) ?
+        :param node: dict with all node details. (/etc/osha/servers.yml) ?
         :param kwargs: any additional parameters can be passed using this config
         option.
         """
-        self.username = node_username
-        self.password = node_password
-        self.ip = node_ip
+        self.node = node
         self.kwargs = kwargs
 
     @abc.abstractmethod

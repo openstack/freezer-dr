@@ -35,16 +35,14 @@ class FencerManager(object):
         """
         processed_nodes = []
         for node in self.nodes:
-            node_details = self.parser.find_server_by_ip(node.get('ip'))
+            node_details = self.parser.find_server_by_ip(node.get('ip')) or\
+                           self.parser.find_server_by_hostname(node.get('host'))
             driver = importutils.import_object(
                 self.fencer.get('driver'),
-                node_details.get('fencer-ip'),
-                node_details.get('fencer-user'),
-                node_details.get('fencer-password'),
+                node=node_details,
                 **self.fencer.get('options')
             )
             node['status'] = self.do_shutdown_procedure(driver)
-            print "Shit Happens", driver.status()
             processed_nodes.append(node)
         return processed_nodes
 

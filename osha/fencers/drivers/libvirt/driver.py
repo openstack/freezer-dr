@@ -12,45 +12,35 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from osha.fencers.common.driver import FencerBaseDriver
-from osha.fencers.drivers.ipmi.ipmitool import IpmiInterface
 from oslo_log import log
 from oslo_config import cfg
+import libvirt
 
 CONF = cfg.CONF
 LOG = log.getLogger(__name__)
 
 
-class IpmiDriver(FencerBaseDriver):
+class LibvirtDriver(FencerBaseDriver):
     def __init__(self, node, **kwargs):
-        super(IpmiDriver, self).__init__(node, **kwargs)
-        self.interface = IpmiInterface(
-            node.get('fencer-ip'),
-            node.get('fencer-user'),
-            node.get('fencer-password'),
-            verbose=CONF.debug)
+        super(LibvirtDriver, self).__init__(node, **kwargs)
+        conn_name = kwargs.get('name', None)
+        self.connection = libvirt.open(name=conn_name)
 
     def force_shutdown(self):
-        try:
-            self.interface.power_down()
-        except Exception as e:
-            LOG.error(e)
+        target = self.connection.lookupByName(name=self.node.get('hostname'))
+        return target.destroy()
 
     def graceful_shutdown(self):
-        try:
-            self.interface.power_soft()
-        except Exception as e:
-            LOG.error(e)
+        target = self.connection.lookupByName(name=self.node.get('hostname'))
+        return target.shutdown()
 
     def status(self):
-        return self.interface.get_power_status()
-
-    # @todo remove this fn as it's for testing purposes only :)
-    def power_on(self):
-        self.interface.power_on()
+        target = self.connection.lookupByName(name=self.node.get('hostname'))
+        return target.isActive()
 
     def get_info(self):
         return {
-            'name': 'IPMI Interface driver',
+            'name': 'Libvirt Interface driver',
             'version': 1.0,
             'author': 'Hewlett-Packard Development Company, L.P'
         }
