@@ -1,7 +1,23 @@
-# __author__ = 'saad'
+# (c) Copyright 2014,2015 Hewlett-Packard Development Company, L.P.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import sys
 import subprocess
 from distutils import spawn
+from oslo_log import log
+
+LOG = log.getLogger(__name__)
 
 
 class IpmiInterface:
@@ -31,6 +47,7 @@ class IpmiInterface:
             password=password,
             interface=interface
         )
+        LOG.debug('IPMI Interface initialized')
 
     def _update_cmd_credentials(self, host, username, password, interface):
         """
@@ -58,7 +75,7 @@ class IpmiInterface:
         cmd = self._cmd + ' chassis power status'
         output = self._process_request(cmd)
         if self._verbose:
-            print "[Debug]: ", output
+            LOG.debug(output)
         if 'is on'.lower() in output.lower():
             return 1
         elif 'is off'.lower() in output.lower():
@@ -67,10 +84,22 @@ class IpmiInterface:
 
     def power_down(self):
         """
-        shutdown the machine
+        Force shutdown the machine
         """
         cmd = self._cmd + ' chassis power down'
         output = self._process_request(cmd)
+        LOG.info('IPMI interface force shutdown node: %s, output: %s' %
+                 (self._host, output))
+        return output
+
+    def power_soft(self):
+        """
+        Softly shutdown the machine
+        """
+        cmd = self._cmd + 'chassis power soft'
+        output = self._process_request(cmd)
+        LOG.info('IPMI interface soft shutdown node: %s, output: %s' %
+                 (self._host, output))
         return output
 
     def power_reset(self):
@@ -89,7 +118,7 @@ class IpmiInterface:
 
     def _process_request(self, cmd):
         if self._verbose:
-            print "Executing IPMI command: ", cmd
+            LOG.debug('Executing IPMI command:', cmd)
 
         process = subprocess.Popen(cmd, shell=True,
                                    stdout=subprocess.PIPE,
@@ -97,10 +126,11 @@ class IpmiInterface:
         output, error = process.communicate()
 
         if self._verbose:
-            print "[Debug] Process Output: ", output
-            print "[Debug] Process Error: ", error
+            LOG.debug('IPMI Output: ', output)
+            LOG.debug('IPMI Error', error)
 
         if process.returncode:
+            LOG.error(cmd)
             raise Exception(error)
         return output
 
@@ -112,4 +142,7 @@ class IpmiInterface:
         :return: output of the command you sent or raise error
         """
         cmd = self._cmd + cmd
-        return self._process_request(cmd)
+        output = self._process_request(cmd)
+        LOG.info('Executing IPMI custom command: %s with output: %s' %
+                 (cmd, output))
+        return output

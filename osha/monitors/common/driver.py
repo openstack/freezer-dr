@@ -23,7 +23,7 @@ class MonitorBaseDriver(object):
     unified interface and as many plugins as we want...
     """
 
-    def __init__(self, username, password, endpoint, kwargs):
+    def __init__(self, username, password, endpoint, **kwargs):
         """
         Initializing the driver. Any monitoring system requires the following
         parameters to call it's api. All these parameters can be passed from the

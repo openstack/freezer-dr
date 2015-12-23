@@ -14,8 +14,8 @@
 from osha.common import config
 from oslo_config import cfg
 from oslo_log import log
-from oslo_utils import importutils
 from osha.monitors.common.manager import MonitorManager
+from osha.fencors.common.manager import FencorManager
 
 CONF = cfg.CONF
 LOG = log.getLogger(__name__)
@@ -30,7 +30,11 @@ def main():
     # Do the monitoring procedure
     # Monitor, analyse, nodes down ?, wait, double check ? evacuate ..
     nodes = monitor.monitor()
-    print "Evacuate those nodes:> ", nodes
     if nodes:
-        # evacuate process goes here !
-        pass
+        # @todo put node in maintenance mode :) Not working with virtual
+        # deployments
+        # Load Fence driver
+        # Shutdown the node
+        fencor = FencorManager(nodes)
+        nodes = fencor.fence()
+        print "Fenced nodes are", nodes

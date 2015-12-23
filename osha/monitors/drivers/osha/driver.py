@@ -26,7 +26,7 @@ LOG = log.getLogger(__name__)
 class OshaDriver(MonitorBaseDriver):
 
     def __init__(self, username, password, endpoint, **kwargs):
-        super(OshaDriver, self).__init__(username, password, endpoint, kwargs)
+        super(OshaDriver, self).__init__(username, password, endpoint, **kwargs)
         client = OSClient(
             authurl=endpoint,
             username=username,

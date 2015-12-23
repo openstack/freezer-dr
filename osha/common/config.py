@@ -21,7 +21,7 @@ CONF = cfg.CONF
 
 _MONITORS = [
     cfg.StrOpt('driver',
-               default='osha.monitors.plugins.osha.OshaDriver',
+               default='osha.monitors.drivers.osha.driver.OshaDriver',
                help='Driver used to get a status updates of compute nodes'),
     cfg.StrOpt('username',
                help='username to be used to initialize the monitoring driver'),
@@ -32,7 +32,8 @@ _MONITORS = [
     cfg.DictOpt('kwargs',
                 default={},
                 help='List of kwargs if you want to pass it to initialize'
-                     ' the monitoring driver')
+                     ' the monitoring driver. should be provided in key:value '
+                     'format')
 ]
 
 
@@ -40,6 +41,29 @@ _COMMON = [
     cfg.IntOpt('wait',
                default=30,
                help='Time to wait between different operations')
+]
+
+_FENCOR = [
+    cfg.StrOpt('credentials-file',
+               help='YAML File contains the required credentials for compute '
+                    'nodes'),
+    cfg.IntOpt('retries',
+               default=1,
+               help='Number of retries to fence the each compute node. Must be'
+                    ' at least 1 to try first the soft shutdown'),
+    cfg.IntOpt('hold-period',
+               default=10,
+               help='Time in seconds to wait between retries. Should be '
+                    'reasonable amount of time as different servers take '
+                    'different times to shut off'),
+    cfg.StrOpt('driver',
+               default='osha.fencors.drivers.ipmi.driver.IpmiDriver',
+               help='Choose the best fencor driver i.e.(ipmi, libvirt, ..'),
+    cfg.DictOpt('options',
+                default={},
+                help='List of kwargs to customize the fencor operation. You '
+                     'fencor driver should support these options. Options '
+                     'should be in key:value format')
 ]
 
 
@@ -130,6 +154,13 @@ def configure():
     CONF.register_group(monitors_grp)
     CONF.register_opts(_MONITORS, group='monitoring')
 
+    fencors_grp = cfg.OptGroup('fencor',
+                                title='Fencor Options',
+                                help='Fencor Driver/plugin to be used to '
+                                     'fence compute nodes')
+    CONF.register_group(fencors_grp)
+    CONF.register_opts(_FENCOR, group='fencor')
+
     default_conf = cfg.find_config_files('osha', 'osha',
                                          '.conf')
     log.register_options(CONF)
@@ -160,7 +191,8 @@ def list_opts():
     _OPTS = {
         None: _COMMON,
         'monitoring': _MONITORS,
-        'keystone': build_os_options()
+        'keystone': build_os_options(),
+        'fencor': _FENCOR
     }
 
     return _OPTS.items()
