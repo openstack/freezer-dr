@@ -15,7 +15,7 @@ from osha.common import config
 from oslo_config import cfg
 from oslo_log import log
 from osha.monitors.common.manager import MonitorManager
-from osha.fencors.common.manager import FencorManager
+from osha.fencers.common.manager import FencerManager
 
 CONF = cfg.CONF
 LOG = log.getLogger(__name__)
@@ -35,6 +35,6 @@ def main():
         # deployments
         # Load Fence driver
         # Shutdown the node
-        fencor = FencorManager(nodes)
-        nodes = fencor.fence()
+        fencer = FencerManager(nodes)
+        nodes = fencer.fence()
         print "Fenced nodes are", nodes

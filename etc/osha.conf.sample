@@ -91,7 +91,7 @@
 #instance_uuid_format = "[instance: %(uuid)s] "
 
 
-[fencor]
+[fencer]
 
 #
 # From osha
@@ -100,16 +100,18 @@
 # YAML File contains the required credentials for compute nodes (string value)
 #credentials_file = <None>
 
-# Number of retries to fence the each compute node. (integer value)
+# Number of retries to fence the each compute node. Must be at least 1 to try
+# first the soft shutdown (integer value)
 #retries = 1
 
-# Time in seconds to wait between retries (integer value)
+# Time in seconds to wait between retries. Should be reasonable amount of time
+# as different servers take different times to shut off (integer value)
 #hold_period = 10
 
-# Choose the best fencor driver i.e.(ipmi, libvirt, .. (string value)
-#driver = osha.fencors.drivers.ipmi.driver.IpmiDriver
+# Choose the best fencer driver i.e.(ipmi, libvirt, .. (string value)
+#driver = osha.fencers.drivers.ipmi.driver.IpmiDriver
 
-# List of kwargs to customize the fencor operation. You fencor driver should
+# List of kwargs to customize the fencer operation. You fencer driver should
 # support these options. Options should be in key:value format (dict value)
 #options =
 

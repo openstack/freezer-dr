@@ -43,7 +43,7 @@ _COMMON = [
                help='Time to wait between different operations')
 ]
 
-_FENCOR = [
+_FENCER = [
     cfg.StrOpt('credentials-file',
                help='YAML File contains the required credentials for compute '
                     'nodes'),
@@ -57,12 +57,12 @@ _FENCOR = [
                     'reasonable amount of time as different servers take '
                     'different times to shut off'),
     cfg.StrOpt('driver',
-               default='osha.fencors.drivers.ipmi.driver.IpmiDriver',
-               help='Choose the best fencor driver i.e.(ipmi, libvirt, ..'),
+               default='osha.fencers.drivers.ipmi.driver.IpmiDriver',
+               help='Choose the best fencer driver i.e.(ipmi, libvirt, ..'),
     cfg.DictOpt('options',
                 default={},
-                help='List of kwargs to customize the fencor operation. You '
-                     'fencor driver should support these options. Options '
+                help='List of kwargs to customize the fencer operation. You '
+                     'fencer driver should support these options. Options '
                      'should be in key:value format')
 ]
 
@@ -154,12 +154,12 @@ def configure():
     CONF.register_group(monitors_grp)
     CONF.register_opts(_MONITORS, group='monitoring')
 
-    fencors_grp = cfg.OptGroup('fencor',
-                                title='Fencor Options',
-                                help='Fencor Driver/plugin to be used to '
+    fencers_grp = cfg.OptGroup('fencer',
+                                title='fencer Options',
+                                help='fencer Driver/plugin to be used to '
                                      'fence compute nodes')
-    CONF.register_group(fencors_grp)
-    CONF.register_opts(_FENCOR, group='fencor')
+    CONF.register_group(fencers_grp)
+    CONF.register_opts(_FENCER, group='fencer')
 
     default_conf = cfg.find_config_files('osha', 'osha',
                                          '.conf')
@@ -192,7 +192,7 @@ def list_opts():
         None: _COMMON,
         'monitoring': _MONITORS,
         'keystone': build_os_options(),
-        'fencor': _FENCOR
+        'fencer': _FENCER
     }
 
     return _OPTS.items()

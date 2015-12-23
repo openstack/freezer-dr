@@ -17,15 +17,15 @@ import six
 
 
 @six.add_metaclass(abc.ABCMeta)
-class FencorBaseDriver(object):
+class FencerBaseDriver(object):
     """
-    Abstract class that all fencor plugins should implement to have a
+    Abstract class that all fencer plugins should implement to have a
     unified interface and as many plugins as we want...
     """
 
     def __init__(self, node_ip, node_username, node_password, **kwargs):
         """
-        Initializing the driver. Any fencor driver requires the following
+        Initializing the driver. Any fencer driver requires the following
         parameters to do the api calls. All these parameters can be passed from
         the configuration file in /etc/osha/osha.conf (default)
         :param credentials_file: path to the credentials file

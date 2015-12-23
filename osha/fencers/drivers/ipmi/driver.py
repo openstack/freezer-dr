@@ -11,8 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from osha.fencors.common.driver import FencorBaseDriver
-from osha.fencors.drivers.ipmi.ipmitool import IpmiInterface
+from osha.fencers.common.driver import FencerBaseDriver
+from osha.fencers.drivers.ipmi.ipmitool import IpmiInterface
 from oslo_log import log
 from oslo_config import cfg
 
@@ -20,7 +20,7 @@ CONF = cfg.CONF
 LOG = log.getLogger(__name__)
 
 
-class IpmiDriver(FencorBaseDriver):
+class IpmiDriver(FencerBaseDriver):
     def __init__(self, node_ip, node_username, node_password, **kwargs):
         super(IpmiDriver, self).__init__(node_ip, node_username, node_password,
                                          **kwargs)

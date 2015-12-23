@@ -20,41 +20,41 @@
     - id: deployer
       ip-addr: 192.168.10.254
       hostname: padawan-cp1-c0-m1-mgmt
-      ilo-ip: 192.168.9.2
-      ilo-password: password
-      ilo-user: admin
+      fencer-ip: 192.168.9.2
+      fencer-password: password
+      fencer-user: admin
 
     - id: ccn-0001
       ip-addr: 192.168.10.3
       hostname: padawan-cp1-c1-m1-mgmt
-      ilo-ip: 192.168.9.3
-      ilo-password: password
-      ilo-user: admin
+      fencer-ip: 192.168.9.3
+      fencer-password: password
+      fencer-user: admin
 
     - id: ccn-0002
       ip-addr: 192.168.10.4
       hostname: padawan-cp1-c1-m2-mgmt
-      ilo-ip: 192.168.9.4
-      ilo-password: password
-      ilo-user: admin
+      fencer-ip: 192.168.9.4
+      fencer-password: password
+      fencer-user: admin
 
     - id: ccn-0003
       ip-addr: 192.168.10.5
       hostname: padawan-cp1-c1-m3-mgmt
-      ilo-ip: 192.168.9.5
-      ilo-password: password
-      ilo-user: admin
+      fencer-ip: 192.168.9.5
+      fencer-password: password
+      fencer-user: admin
 
     - id: COMPUTE-0001
       ip-addr: 192.168.10.6
       hostname: padawan-ccp-comp0001-mgmt
-      ilo-ip: 192.168.9.6
-      ilo-password: password
-      ilo-user: admin
+      fencer-ip: 192.168.9.6
+      fencer-password: password
+      fencer-user: admin
 
     - id: COMPUTE-0002
       ip-addr: 192.168.10.7
       hostname: padawan-ccp-comp0002-mgmt
-      ilo-ip: 192.168.9.7
-      ilo-password: password
-      ilo-user: admin
+      fencer-ip: 192.168.9.7
+      fencer-password: password
+      fencer-user: admin

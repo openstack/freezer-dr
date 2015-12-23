@@ -21,12 +21,12 @@ CONF = cfg.CONF
 LOG = log.getLogger(__name__)
 
 
-class FencorManager(object):
+class FencerManager(object):
 
     def __init__(self, nodes):
-        self.fencor = CONF.get('fencor')
+        self.fencer = CONF.get('fencer')
         self.nodes = nodes
-        self.parser = YamlParser(self.fencor.get('credentials_file'))
+        self.parser = YamlParser(self.fencer.get('credentials_file'))
 
     def fence(self):
         """
@@ -37,11 +37,11 @@ class FencorManager(object):
         for node in self.nodes:
             node_details = self.parser.find_server_by_ip(node.get('ip'))
             driver = importutils.import_object(
-                self.fencor.get('driver'),
-                node_details.get('fencor-ip'),
-                node_details.get('fencor-user'),
-                node_details.get('fencor-password'),
-                **self.fencor.get('options')
+                self.fencer.get('driver'),
+                node_details.get('fencer-ip'),
+                node_details.get('fencer-user'),
+                node_details.get('fencer-password'),
+                **self.fencer.get('options')
             )
             node['status'] = self.do_shutdown_procedure(driver)
             print "Shit Happens", driver.status()
@@ -49,7 +49,7 @@ class FencorManager(object):
         return processed_nodes
 
     def do_shutdown_procedure(self, driver):
-        for retry in range(0, self.fencor.get('retries', 1)):
+        for retry in range(0, self.fencer.get('retries', 1)):
             if driver.status():
                 try:
                     driver.graceful_shutdown()
@@ -59,9 +59,9 @@ class FencorManager(object):
                 return True
             # try to wait a pre-configured amount of time before redoing
             # the fence call again :)
-            sleep(self.fencor.get('hold_period', 10))
+            sleep(self.fencer.get('hold_period', 10))
             LOG.info('wait for %d seconds before retrying to gracefully '
-                     'shutdown' % self.fencor.get('hold_period', 10))
+                     'shutdown' % self.fencer.get('hold_period', 10))
             LOG.info('Retrying to gracefully shutdown the node.')
 
         try:
