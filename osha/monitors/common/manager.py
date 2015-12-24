@@ -53,7 +53,7 @@ class MonitorManager(object):
         # of failed nodes
         nodes_down = self.driver.analyze_nodes(nodes=data)
         if not nodes_down:
-            LOG.info('No nodes reported down from %s')
+            LOG.info('No nodes reported down')
             return 0  # for the time being we will exit with no error !
 
         LOG.info('Nodes Down are: %s will be double checked again after %s '

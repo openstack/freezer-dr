@@ -16,6 +16,9 @@ from keystoneclient.auth.identity import v3
 from keystoneclient import session
 from novaclient.v2 import client as novaclient
 from neutronclient.v2_0 import client as neutronclient
+from oslo_log import log
+
+LOG = log.getLogger(__name__)
 
 
 class OSClient:
@@ -130,3 +133,30 @@ class OSClient:
     def get_session(self):
         auth_session = session.Session(auth=self.authSession.auth)
         return auth_session
+
+    def disable_node(self, hostname):
+        auth_session = session.Session(auth=self.authSession.auth)
+        nova = novaclient.Client(session=auth_session,
+                                 endpoint_type=self.endpoint_type)
+        try:
+            node = nova.services.find(host=hostname)
+        except Exception as e:
+            LOG.error(e)
+            return False
+
+        if not node:
+            return False
+        node = node.to_dict()
+        try:
+            res = nova.services.disable_log_reason(
+                host=node.get('host'),
+                binary=node.get('binary'),
+                reason='Host Failed and node evacuated.'
+            )
+            LOG.info('Compute host: %s has been disabled to be evacuated. '
+                     'Host details: %s' % (node.get('host'), str(node)))
+        except Exception as e:
+            LOG.error(e)
+            return False
+
+        return True

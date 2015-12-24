@@ -11,24 +11,33 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from osha.monitor import Monitor
-import osclient
+from oslo_config import cfg
+from oslo_log import log
+from osha.common.osclient import OSClient
 
-password = 'a22dQNcT'
-user_id = None
-username = 'admin'
-auth_url = 'http://192.168.245.9:35357/v3'
-project_name = 'demo'
-project_id = None
-user_domain_name = 'Default'
-project_domain_name = 'Default'
+CONF = cfg.CONF
+LOG = log.getLogger(__name__)
 
-client = osclient.OSClient(authurl=auth_url,
-                           username=username,
-                           password=password,
-                           user_domain_name=user_domain_name,
-                           project_name=project_name,
-                           project_domain_name=project_domain_name,
-                           endpoint_type='internal')
-monitor = Monitor(client, 1)
-monitor.monitor()
+
+class EvacuationManager(object):
+    """
+    The Evacuation procedure is as follow:
+    1- Put node in maintenance mode (disable node )
+    2- make sure it's in maintenance mode or disabled
+    3- try to fence node and shutdown it
+    4- make sure node is down
+    5- Get a list of instances running on this node
+    6- Evacuate :)
+    """
+    def __init__(self):
+        """
+        @todo we cannot get the credentials from monitoring so, we need to get
+        it from keystone section and we need to review that for code in other
+         parts
+        :return:
+        """
+        credentials = CONF.get('monitoring')
+        self.client = OSClient(
+            authurl=credentials.get('endpoint'),
+            username=credentials.get()
+        )
