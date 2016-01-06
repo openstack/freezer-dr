@@ -48,6 +48,7 @@
     - id: COMPUTE-0001
       ip-addr: 192.168.10.6
       hostname: padawan-ccp-comp0001-mgmt
+      domain-name: padawan-vagrant_cpn-0001  # used for libvirt driver only !
       fencer-ip: 192.168.9.6
       fencer-password: password
       fencer-user: admin
@@ -55,6 +56,7 @@
     - id: COMPUTE-0002
       ip-addr: 192.168.10.7
       hostname: padawan-ccp-comp0002-mgmt
+      domain-name: padawan-vagrant_cpn-0002  # name of VM in kvm
       fencer-ip: 192.168.9.7
       fencer-password: password
       fencer-user: admin

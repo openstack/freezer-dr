@@ -15,8 +15,7 @@ from osha.common import config
 from oslo_config import cfg
 from oslo_log import log
 from osha.monitors.common.manager import MonitorManager
-from osha.fencers.common.manager import FencerManager
-from osha.common.osclient import OSClient
+from osha.evacuate import EvacuationManager
 
 CONF = cfg.CONF
 LOG = log.getLogger(__name__)
@@ -27,16 +26,6 @@ def main():
     config.setup_logging()
     LOG.info('Starting osha ... ')
     # load and initialize the monitoring driver
-    mon = CONF.get('monitoring')
-    client = OSClient(
-            authurl=mon.get('endpoint'),
-            username=mon.get('username'),
-            password=mon.get('password'),
-            **mon.get('kwargs')
-        )
-    client.disable_node('padawan-ccp-comp0003-mgmt')
-    #client.set_in_maintance(['padawan-ccp-comp0003-mgmt'])
-    exit()
     monitor = MonitorManager()
     # Do the monitoring procedure
     # Monitor, analyse, nodes down ?, wait, double check ? evacuate ..
@@ -47,6 +36,8 @@ def main():
         # deployments
         # Load Fence driver
         # Shutdown the node
-        fencer = FencerManager(nodes)
-        nodes = fencer.fence()
+        evacuator = EvacuationManager(nodes)
+        evacuator.evacuate()
+        exit()
+
         print "Fenced nodes are", nodes

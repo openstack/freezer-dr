@@ -116,62 +116,42 @@
 #options =
 
 
-[keystone]
+[keystone_authtoken]
 
 #
 # From osha
 #
 
-# Name used for authentication with the OpenStack Identity service. Defaults to
-# env[OS_USERNAME]. (string value)
-#os_username =
+# Openstack auth URI i.e. http://controller:5000 (string value)
+#auth_uri = <None>
 
-# Password used for authentication with the OpenStack Identity service.
-# Defaults to env[OS_PASSWORD]. (string value)
-#os_password =
+# Openstack auth URL i.e. http://controller:35357 (string value)
+#auth_url = <None>
 
-# Project name to scope to. Defaults to env[OS_PROJECT_NAME]. (string value)
-#os_project_name =
+# Openstack auth plugin i.e. ( password, token, ...) password is the only
+# available plugin for the time being (string value)
+#auth_plugin = <None>
 
-# Domain name containing project. Defaults to env[OS_PROJECT_DOMAIN_NAME].
-# (string value)
-#os_project_domain_name =
+# Openstack Project Domain id, default is Default (string value)
+#project_domain_id = Default
 
-# User's domain name. Defaults to env[OS_USER_DOMAIN_NAME]. (string value)
-#os_user_domain_name =
+# Openstack user Domain id, default is Default (string value)
+#user_domain_id = Default
 
-# Tenant to request authorization on. Defaults to env[OS_TENANT_NAME]. (string
-# value)
-#os_tenant_name =
+# Openstack Project Domain name, default is Default (string value)
+#project_domain_name = Default
 
-# Tenant to request authorization on. Defaults to env[OS_TENANT_ID]. (string
-# value)
-#os_tenant_id =
+# Openstack user Domain name, default is Default (string value)
+#user_domain_name = Default
 
-# Specify the Identity endpoint to use for authentication. Defaults to
-# env[OS_AUTH_URL]. (string value)
-#os_auth_url =
+# Openstack Project Name. (string value)
+#project_name = services
 
-# Specify the Freezer backup service endpoint to use. Defaults to
-# env[OS_BACKUP_URL]. (string value)
-#os_backup_url =
+# Openstack username (string value)
+#username = <None>
 
-# Specify the region to use. Defaults to env[OS_REGION_NAME]. (string value)
-#os_region_name =
-
-# Specify an existing token to use instead of retrieving one via authentication
-# (e.g. with username & password). Defaults to env[OS_TOKEN]. (string value)
-#os_token =
-
-# Identity API version: 2.0 or 3. Defaults to env[OS_IDENTITY_API_VERSION]
-# (string value)
-#os_identity_api_version =
-
-# Endpoint type to select. Valid endpoint types: "public" or "publicURL",
-# "internal" or "internalURL", "admin" or "adminURL". Defaults to
-# env[OS_ENDPOINT_TYPE] or "public" (string value)
-# Allowed values: public, publicURL, internal, internalURL, admin, adminURL
-#os_endpoint_type = public
+# Openstack Password (string value)
+#password = <None>
 
 
 [monitoring]

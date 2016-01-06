@@ -105,20 +105,22 @@ class OSClient:
         self.authSession = new_sess
         evacuated_nodes = []
         for node in nodes:
-            hypervisors = nova.hypervisors.search(node, True)
+            hypervisors = nova.hypervisors.search(node.get('host'), True)
             for hypervisor in hypervisors:
-                host = {'host': node, 'servers': hypervisor.servers}
+                host = {'host': node.get('host'), 'servers': hypervisor.servers}
                 evacuated_nodes.append(host)
                 for server in hypervisor.servers:
-                    pass
-#                    output = nova.servers.evacuate(server.get('uuid'),
-#                                                   on_shared_storage=True)
+                    output = nova.servers.evacuate(server.get('uuid'),
+                                                   on_shared_storage=True)
+                    print output
+                    exit()
+
         return evacuated_nodes
 
     def set_in_maintance(self, nodes):
         new_sess = session.Session(auth=self.authSession.auth)
         nova = novaclient.Client(session=new_sess,
-                                       endpoint_type=self.endpoint_type)
+                                 endpoint_type=self.endpoint_type)
         self.authSession = new_sess
         for node in nodes:
             output = []
@@ -133,6 +135,25 @@ class OSClient:
     def get_session(self):
         auth_session = session.Session(auth=self.authSession.auth)
         return auth_session
+
+    def get_node_status(self, hostname):
+        """
+        Check the node nova-service status and if it's disabled or not
+        :param hostname: of the required node
+        :return: return dict contains the node status if it's disabled or not !
+        """
+        nova = novaclient.Client(session=self.authSession,
+                                 endpoint_type=self.endpoint_type)
+        try:
+            node = nova.services.find(host=hostname)
+            print node
+        except Exception as e:
+            LOG.error(e)
+            return False
+
+        if not node:
+            return False
+        return node.to_dict()
 
     def disable_node(self, hostname):
         auth_session = session.Session(auth=self.authSession.auth)

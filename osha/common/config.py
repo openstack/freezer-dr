@@ -66,6 +66,45 @@ _FENCER = [
                      'should be in key:value format')
 ]
 
+_KEYSTONE_AUTH_TOKEN = [
+    cfg.StrOpt('auth_uri',
+               help='Openstack auth URI i.e. http://controller:5000',
+               dest='auth_uri'),
+    cfg.StrOpt('auth_url',
+               help='Openstack auth URL i.e. http://controller:35357',
+               dest='auth_url'),
+    cfg.StrOpt('auth_plugin',
+               help='Openstack auth plugin i.e. ( password, token, ...) '
+                    'password is the only available plugin for the time being',
+               dest='auth_plugin'),
+    cfg.StrOpt('project_domain_id',
+               default='Default',
+               help='Openstack Project Domain id, default is Default',
+               dest='project_domain_id'),
+    cfg.StrOpt('user_domain_id',
+               default='Default',
+               help='Openstack user Domain id, default is Default',
+               dest='user_domain_id'),
+    cfg.StrOpt('project_domain_name',
+               default='Default',
+               help='Openstack Project Domain name, default is Default',
+               dest='project_domain_name'),
+    cfg.StrOpt('user_domain_name',
+               default='Default',
+               help='Openstack user Domain name, default is Default',
+               dest='user_domain_name'),
+    cfg.StrOpt('project_name',
+               default='services',
+               help='Openstack Project Name.',
+               dest='project_name'),
+    cfg.StrOpt('username',
+               help='Openstack username',
+               dest='username'),
+    cfg.StrOpt('password',
+               help='Openstack Password',
+               dest='password')
+]
+
 
 def build_os_options():
     osclient_opts = [
@@ -161,6 +200,14 @@ def configure():
     CONF.register_group(fencers_grp)
     CONF.register_opts(_FENCER, group='fencer')
 
+    # Osha Auth
+    keystone_grp = cfg.OptGroup('keystone_authtoken',
+                                title='Keystone Auth Options',
+                                help='Openstack Credentials to call the nova '
+                                     'APIs to evacuate ')
+    CONF.register_group(keystone_grp)
+    CONF.register_opts(_KEYSTONE_AUTH_TOKEN, group='keystone_authtoken')
+
     default_conf = cfg.find_config_files('osha', 'osha',
                                          '.conf')
     log.register_options(CONF)
@@ -191,7 +238,7 @@ def list_opts():
     _OPTS = {
         None: _COMMON,
         'monitoring': _MONITORS,
-        'keystone': build_os_options(),
+        'keystone_authtoken': _KEYSTONE_AUTH_TOKEN,
         'fencer': _FENCER
     }
 

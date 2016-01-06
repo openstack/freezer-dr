@@ -27,15 +27,15 @@ class LibvirtDriver(FencerBaseDriver):
         self.connection = libvirt.open(name=conn_name)
 
     def force_shutdown(self):
-        target = self.connection.lookupByName(name=self.node.get('hostname'))
+        target = self.connection.lookupByName(name=self.node.get('domain-name'))
         return target.destroy()
 
     def graceful_shutdown(self):
-        target = self.connection.lookupByName(name=self.node.get('hostname'))
+        target = self.connection.lookupByName(name=self.node.get('domain-name'))
         return target.shutdown()
 
     def status(self):
-        target = self.connection.lookupByName(name=self.node.get('hostname'))
+        target = self.connection.lookupByName(name=self.node.get('domain-name'))
         return target.isActive()
 
     def get_info(self):
