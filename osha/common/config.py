@@ -71,7 +71,7 @@ _KEYSTONE_AUTH_TOKEN = [
                help='Openstack auth URI i.e. http://controller:5000',
                dest='auth_uri'),
     cfg.StrOpt('auth_url',
-               help='Openstack auth URL i.e. http://controller:35357',
+               help='Openstack auth URL i.e. http://controller:35357/v3',
                dest='auth_url'),
     cfg.StrOpt('auth_plugin',
                help='Openstack auth plugin i.e. ( password, token, ...) '
@@ -103,6 +103,33 @@ _KEYSTONE_AUTH_TOKEN = [
     cfg.StrOpt('password',
                help='Openstack Password',
                dest='password')
+]
+
+
+_EVACUATION = [
+    cfg.StrOpt('driver',
+               default='osha.evacuators.drivers.osha.standard.'
+                       'OshaStandardEvacuator',
+               help='Time in seconds to wait between retries to disable compute'
+                    ' node or put it in maintenance mode. Default 10 seconds',
+               dest='driver'),
+    cfg.IntOpt('wait',
+               default=10,
+               help='Time in seconds to wait between retries to disable compute'
+                    ' node or put it in maintenance mode. Default 10 seconds',
+               dest='wait'),
+    cfg.IntOpt('retries',
+               default=1,
+               help='Number of retries to put node in maintenance mode before '
+                    'reporting failure to evacuate the node',
+               dest='retries'),
+    cfg.DictOpt('options',
+                default={},
+                help='Dict contains kwargs to be passed to the evacuator driver'
+                     '. In case you have additional args needs to be passed to '
+                     'your evacuator please, list them as key0:value0, '
+                     'key1:value1, ....',
+                dest='options')
 ]
 
 
@@ -200,6 +227,14 @@ def configure():
     CONF.register_group(fencers_grp)
     CONF.register_opts(_FENCER, group='fencer')
 
+    # Evacuation Section :)
+    evacuators_grp = cfg.OptGroup('evacuation',
+                                  title='Evacuation Options',
+                                  help='Evacuation Driver/plugin opts to be '
+                                       'used to Evacuate compute nodes')
+    CONF.register_group(evacuators_grp)
+    CONF.register_opts(_EVACUATION, group='evacuation')
+
     # Osha Auth
     keystone_grp = cfg.OptGroup('keystone_authtoken',
                                 title='Keystone Auth Options',
@@ -239,7 +274,8 @@ def list_opts():
         None: _COMMON,
         'monitoring': _MONITORS,
         'keystone_authtoken': _KEYSTONE_AUTH_TOKEN,
-        'fencer': _FENCER
+        'fencer': _FENCER,
+        'evacuation': _EVACUATION
     }
 
     return _OPTS.items()

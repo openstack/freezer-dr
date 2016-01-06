@@ -13,6 +13,12 @@
 # limitations under the License.
 
 import os
+from osha.common.osclient import OSClient
+from oslo_config import cfg
+from oslo_log import log
+
+CONF = cfg.CONF
+LOG = log.getLogger(__name__)
 
 
 def env(*env_vars, **kwargs):
@@ -21,3 +27,24 @@ def env(*env_vars, **kwargs):
         if value:
             return value
     return kwargs.get('default', '')
+
+
+def get_os_client():
+    """
+    Loads credentials from [keystone_authtoken] section in the configuration
+    file and initialize the client and return an instance of the client
+    :return: Initialized instance of OS Client
+    """
+    credentials = CONF.get('keystone_authtoken')
+    client = OSClient(
+        authurl=credentials.get('auth_url'),
+        username=credentials.get('username'),
+        password=credentials.get('password'),
+        project_name=credentials.get('project_name'),
+        user_domain_id=credentials.get('user_domain_id'),
+        project_domain_id=credentials.get('project_domain_id'),
+        project_domain_name=credentials.get('project_domain_name'),
+        user_domain_name=credentials.get('user_domain_name')
+    )
+
+    return client

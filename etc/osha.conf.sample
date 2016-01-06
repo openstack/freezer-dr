@@ -91,6 +91,30 @@
 #instance_uuid_format = "[instance: %(uuid)s] "
 
 
+[evacuation]
+
+#
+# From osha
+#
+
+# Time in seconds to wait between retries to disable compute node or put it in
+# maintenance mode. Default 10 seconds (string value)
+#driver = osha.evacuators.drivers.osha.standard.OshaStandardEvacuator
+
+# Time in seconds to wait between retries to disable compute node or put it in
+# maintenance mode. Default 10 seconds (integer value)
+#wait = 10
+
+# Number of retries to put node in maintenance mode before reporting failure to
+# evacuate the node (integer value)
+#retries = 1
+
+# Dict contains kwargs to be passed to the evacuator driver. In case you have
+# additional args needs to be passed to your evacuator please, list them as
+# key0:value0, key1:value1, .... (dict value)
+#options =
+
+
 [fencer]
 
 #
@@ -125,7 +149,7 @@
 # Openstack auth URI i.e. http://controller:5000 (string value)
 #auth_uri = <None>
 
-# Openstack auth URL i.e. http://controller:35357 (string value)
+# Openstack auth URL i.e. http://controller:35357/v3 (string value)
 #auth_url = <None>
 
 # Openstack auth plugin i.e. ( password, token, ...) password is the only

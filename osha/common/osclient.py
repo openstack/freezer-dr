@@ -104,14 +104,26 @@ class OSClient:
                                        endpoint_type=self.endpoint_type)
         self.authSession = new_sess
         evacuated_nodes = []
+        print "Nodes", nodes
         for node in nodes:
             hypervisors = nova.hypervisors.search(node.get('host'), True)
+            print "Hypervisor found is:", hypervisors
             for hypervisor in hypervisors:
                 host = {'host': node.get('host'), 'servers': hypervisor.servers}
                 evacuated_nodes.append(host)
                 for server in hypervisor.servers:
-                    output = nova.servers.evacuate(server.get('uuid'),
+                    try:
+                        output = nova.servers.evacuate(server.get('uuid'),
                                                    on_shared_storage=True)
+                    except Exception as e:
+                        print "ERRORORRRROROROROROROROROROROROROROROROROROROROR"
+                        print e
+                    for i in range(0, 100):
+                        print "-",
+                        if i == 50:
+                            print "Evacuation Result !",
+                    print
+
                     print output
                     exit()
 
@@ -136,16 +148,17 @@ class OSClient:
         auth_session = session.Session(auth=self.authSession.auth)
         return auth_session
 
-    def get_node_status(self, hostname):
+    def get_node_status(self, node):
         """
         Check the node nova-service status and if it's disabled or not
-        :param hostname: of the required node
-        :return: return dict contains the node status if it's disabled or not !
+        :param node: dict contains node info
+        :return: True or False. True => node disabled, False => node is enabled
+        or unknow status !
         """
         nova = novaclient.Client(session=self.authSession,
                                  endpoint_type=self.endpoint_type)
         try:
-            node = nova.services.find(host=hostname)
+            node = nova.services.find(host=node.get('host'))
             print node
         except Exception as e:
             LOG.error(e)
@@ -153,14 +166,17 @@ class OSClient:
 
         if not node:
             return False
-        return node.to_dict()
+        node = node.to_dict()
+        if node.get('status') == 'disabled':
+            return True
+        return False
 
-    def disable_node(self, hostname):
+    def disable_node(self, node):
         auth_session = session.Session(auth=self.authSession.auth)
         nova = novaclient.Client(session=auth_session,
                                  endpoint_type=self.endpoint_type)
         try:
-            node = nova.services.find(host=hostname)
+            node = nova.services.find(host=node.get('host'))
         except Exception as e:
             LOG.error(e)
             return False
@@ -181,3 +197,14 @@ class OSClient:
             return False
 
         return True
+
+    def get_hypervisor_instances(self, node):
+        auth_session = session.Session(auth=self.authSession.auth)
+        nova = novaclient.Client(session=auth_session,
+                                 endpoint_type=self.endpoint_type)
+        hypervisors = nova.hypervisors.search(node.get('host'), True)
+        if not hypervisors:
+            return []
+        return hypervisors[0].servers
+
+

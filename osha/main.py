@@ -15,7 +15,7 @@ from osha.common import config
 from oslo_config import cfg
 from oslo_log import log
 from osha.monitors.common.manager import MonitorManager
-from osha.evacuate import EvacuationManager
+from osha.evacuators.common.manager import EvacuationManager
 
 CONF = cfg.CONF
 LOG = log.getLogger(__name__)
@@ -36,8 +36,8 @@ def main():
         # deployments
         # Load Fence driver
         # Shutdown the node
-        evacuator = EvacuationManager(nodes)
-        evacuator.evacuate()
+        evac = EvacuationManager()
+        evac.evacuate(nodes)
         exit()
 
         print "Fenced nodes are", nodes
