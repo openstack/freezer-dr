@@ -70,9 +70,15 @@ class EvacuationManager(object):
             succeeded_nodes.append(node)
 
         nodes = succeeded_nodes
+
+        # Start evacuation calls ...
         from time import sleep
-        sleep(30)
-        evacuated_nodes = self.driver.evacuate_nodes(nodes)
+        for i in range(0, 10):
+            try:
+                sleep(30)
+                evacuated_nodes = self.driver.evacuate_nodes(nodes)
+            except Exception as e:
+                LOG.error(e)
         return evacuated_nodes
 
     def _disable_node(self, node):
@@ -80,4 +86,13 @@ class EvacuationManager(object):
                 return self.driver.disable_node(node)
         else:
             True
+
+    def reinitialize_driver(self):
+        evcuation_conf = CONF.get('evacuation')
+        self.driver = importutils.import_object(
+            evcuation_conf.get('driver'),
+            evcuation_conf.get('wait'),
+            evcuation_conf.get('retries'),
+            **evcuation_conf.get('options')
+        )
 

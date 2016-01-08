@@ -32,6 +32,7 @@ class OSClient:
         """
         self.authmethod = authmethod
         self.authurl = authurl
+        self.auth_session = None
         if authmethod == 'password':
             self.username = kwargs.get('username', None)
             self.password = kwargs.get('password')
@@ -56,10 +57,10 @@ class OSClient:
                            user_domain_id=self.user_domain_id,
                            user_domain_name=self.user_domain_name,
                            project_domain_name=self.project_domain_name)
-        self.authSession = session.Session(auth=auth)
+        self.auth_session = session.Session(auth=auth)
 
     def novacomputes(self):
-        nova = novaclient.Client(session=self.authSession,
+        nova = novaclient.Client(session=self.auth_session,
                                  endpoint_type=self.endpoint_type)
         services = nova.services.list()
         compute_nodes = []
@@ -73,7 +74,7 @@ class OSClient:
         return compute_nodes
 
     def novahypervisors(self):
-        nova = novaclient.Client(session=self.authSession,
+        nova = novaclient.Client(session=self.auth_session,
                                  endpoint_type=self.endpoint_type)
         hypervisors = nova.hypervisors.list()
         nova_hypervisors = []
@@ -85,10 +86,10 @@ class OSClient:
     def neutronagents(self, hosts=[]):
         if not hosts:
             hosts = self.compute_hosts
-        new_sess = session.Session(auth=self.authSession.auth)
+        new_sess = session.Session(auth=self.auth_session.auth)
         neutron = neutronclient.Client(session=new_sess,
                                        endpoint_type=self.endpoint_type)
-        self.authSession = new_sess
+        self.auth_session = new_sess
         agents = neutron.list_agents()
         neutron_agents = []
         for agent in agents.get('agents'):
@@ -99,41 +100,37 @@ class OSClient:
         return neutron_agents
 
     def evacuate(self, nodes):
-        new_sess = session.Session(auth=self.authSession.auth)
+        """
+        Will get the hypervisors and list all running VMs on it and then start
+        Evacuating one by one ...
+        :param nodes: List of nodes to be evacuated !
+        :return: List of nodes with VMs that were running on that node
+        """
+        new_sess = session.Session(auth=self.auth_session.auth)
         nova = novaclient.Client(session=new_sess,
-                                       endpoint_type=self.endpoint_type)
-        self.authSession = new_sess
+                                 endpoint_type=self.endpoint_type)
+        self.auth_session = new_sess
         evacuated_nodes = []
-        print "Nodes", nodes
         for node in nodes:
             hypervisors = nova.hypervisors.search(node.get('host'), True)
-            print "Hypervisor found is:", hypervisors
             for hypervisor in hypervisors:
-                host = {'host': node.get('host'), 'servers': hypervisor.servers}
-                evacuated_nodes.append(host)
+                if not hasattr(hypervisor, 'servers'):
+                    break
                 for server in hypervisor.servers:
                     try:
-                        output = nova.servers.evacuate(server.get('uuid'),
-                                                   on_shared_storage=True)
+                        nova.servers.evacuate(server.get('uuid'),
+                                              on_shared_storage=True)
                     except Exception as e:
-                        print "ERRORORRRROROROROROROROROROROROROROROROROROROROR"
-                        print e
-                    for i in range(0, 100):
-                        print "-",
-                        if i == 50:
-                            print "Evacuation Result !",
-                    print
-
-                    print output
-                    exit()
-
+                        LOG.error(e)
+                host = {'host': node.get('host'), 'servers': hypervisor.servers}
+                evacuated_nodes.append(host)
         return evacuated_nodes
 
     def set_in_maintance(self, nodes):
-        new_sess = session.Session(auth=self.authSession.auth)
+        new_sess = session.Session(auth=self.auth_session.auth)
         nova = novaclient.Client(session=new_sess,
                                  endpoint_type=self.endpoint_type)
-        self.authSession = new_sess
+        self.auth_session = new_sess
         for node in nodes:
             output = []
             host = nova.hosts.get(node)[0]
@@ -141,11 +138,11 @@ class OSClient:
             try:
                 output.append(host.update(values))
             except Exception as e:
-                print "ERROR ::: ", e
+                LOG.error(e)
             return output
 
     def get_session(self):
-        auth_session = session.Session(auth=self.authSession.auth)
+        auth_session = session.Session(auth=self.auth_session.auth)
         return auth_session
 
     def get_node_status(self, node):
@@ -155,51 +152,52 @@ class OSClient:
         :return: True or False. True => node disabled, False => node is enabled
         or unknow status !
         """
-        nova = novaclient.Client(session=self.authSession,
+        nova = novaclient.Client(session=self.auth_session,
                                  endpoint_type=self.endpoint_type)
         try:
-            node = nova.services.find(host=node.get('host'))
-            print node
+            node_service = nova.services.find(host=node.get('host'))
+            del nova
         except Exception as e:
             LOG.error(e)
             return False
 
-        if not node:
+        if not node_service:
             return False
-        node = node.to_dict()
+        node = node_service.to_dict()
         if node.get('status') == 'disabled':
             return True
         return False
 
     def disable_node(self, node):
-        auth_session = session.Session(auth=self.authSession.auth)
+        auth_session = session.Session(auth=self.auth_session.auth)
         nova = novaclient.Client(session=auth_session,
                                  endpoint_type=self.endpoint_type)
         try:
-            node = nova.services.find(host=node.get('host'))
+            node_service = nova.services.find(host=node.get('host'))
         except Exception as e:
             LOG.error(e)
             return False
 
-        if not node:
+        if not node_service:
             return False
-        node = node.to_dict()
+        node = node_service.to_dict()
+        del node_service
         try:
-            res = nova.services.disable_log_reason(
+            nova.services.disable_log_reason(
                 host=node.get('host'),
                 binary=node.get('binary'),
-                reason='Host Failed and node evacuated.'
+                reason='Host Failed and needs to be evacuated.'
             )
+            del nova
             LOG.info('Compute host: %s has been disabled to be evacuated. '
                      'Host details: %s' % (node.get('host'), str(node)))
         except Exception as e:
             LOG.error(e)
             return False
-
         return True
 
     def get_hypervisor_instances(self, node):
-        auth_session = session.Session(auth=self.authSession.auth)
+        auth_session = session.Session(auth=self.auth_session.auth)
         nova = novaclient.Client(session=auth_session,
                                  endpoint_type=self.endpoint_type)
         hypervisors = nova.hypervisors.search(node.get('host'), True)
