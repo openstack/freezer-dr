@@ -77,32 +77,35 @@ _KEYSTONE_AUTH_TOKEN = [
                help='Openstack auth plugin i.e. ( password, token, ...) '
                     'password is the only available plugin for the time being',
                dest='auth_plugin'),
-    cfg.StrOpt('project_domain_id',
-               default='Default',
-               help='Openstack Project Domain id, default is Default',
-               dest='project_domain_id'),
-    cfg.StrOpt('user_domain_id',
-               default='Default',
-               help='Openstack user Domain id, default is Default',
-               dest='user_domain_id'),
-    cfg.StrOpt('project_domain_name',
-               default='Default',
-               help='Openstack Project Domain name, default is Default',
-               dest='project_domain_name'),
-    cfg.StrOpt('user_domain_name',
-               default='Default',
-               help='Openstack user Domain name, default is Default',
-               dest='user_domain_name'),
-    cfg.StrOpt('project_name',
-               default='services',
-               help='Openstack Project Name.',
-               dest='project_name'),
     cfg.StrOpt('username',
                help='Openstack username',
                dest='username'),
     cfg.StrOpt('password',
                help='Openstack Password',
-               dest='password')
+               dest='password'),
+    cfg.StrOpt('project_name',
+               help='Openstack Project Name.',
+               dest='project_name'),
+    cfg.StrOpt('domain_name',
+               help='Openstack domain Name.',
+               dest='domain_name'),
+    cfg.StrOpt('project_domain_id',
+               help='Openstack Project Domain id, default is Default',
+               dest='project_domain_id'),
+    cfg.StrOpt('user_domain_id',
+               help='Openstack user Domain id, default is Default',
+               dest='user_domain_id'),
+    cfg.StrOpt('project_domain_name',
+               help='Openstack Project Domain name, default is Default',
+               dest='project_domain_name'),
+    cfg.StrOpt('user_domain_name',
+               help='Openstack user Domain name, default is Default',
+               dest='user_domain_name'),
+    cfg.DictOpt('kwargs',
+                help='Openstack Authentication arguments you can pass it here '
+                     'as Key:Value, Key1:Value1, ... ',
+                dest='kwargs',
+                default={})
 ]
 
 
@@ -130,6 +133,54 @@ _EVACUATION = [
                      'your evacuator please, list them as key0:value0, '
                      'key1:value1, ....',
                 dest='options')
+]
+
+_NOTIFIERS = [
+    cfg.StrOpt('driver',
+               default='osha.notifiers.drivers.osha.default_email.OshaEmail',
+               dest='driver',
+               help='Notification driver to load it to notify users '
+                    'if something went wrong'),
+    cfg.StrOpt('endpoint',
+               default=None,
+               dest='endpoint',
+               help='Endpoint URL for the notification system. If you the '
+                    'driver you are using doesnot require any URL just comment '
+                    'it or use none'),
+    cfg.StrOpt('username',
+               default=None,
+               dest='username',
+               help='Username to authenticate against the notification system. '
+                    'If the driver you are using doesnot require any '
+                    'authentications comment or use None'),
+    cfg.StrOpt('password',
+               default=None,
+               dest='password',
+               help='Password to authenticate against the notification system. '
+                    'If the driver you are using doesnot require any '
+                    'authentications comment or use None'),
+    cfg.StrOpt('templates-dir',
+               dest='templates-dir',
+               default='/etc/osha/templates',
+               help='Path to Jinja2 templates directory that contains '
+                    'message templates'),
+    cfg.DictOpt('options',
+                default={},
+                dest='options',
+                help='Key:Value Kwargs to pass it to the notification driver, '
+                     'if you want to pass any special arguments for your '
+                     'driver.  '),
+    cfg.ListOpt('notify-list',
+                default=[],
+                dest='notify-list',
+                help='List of emails to sent them notification if something '
+                     'went wrong and Osha wasnot able to send an email to the '
+                     'tenant admin'),
+    cfg.StrOpt('notify-from',
+               dest='notify-from',
+               help='The sender address, it can be email address if we used '
+                    'default email driver, or phone number if we use sms '
+                    'gateway for example.')
 ]
 
 
@@ -235,6 +286,15 @@ def configure():
     CONF.register_group(evacuators_grp)
     CONF.register_opts(_EVACUATION, group='evacuation')
 
+    # Notification Section :)
+    notifiers_grp = cfg.OptGroup('notifiers',
+                                title='Notification Options',
+                                help='Notification Driver/plugin opts to be '
+                                     'used to Notify admins/users if failure '
+                                     'happens')
+    CONF.register_group(notifiers_grp)
+    CONF.register_opts(_NOTIFIERS, group='notifiers')
+
     # Osha Auth
     keystone_grp = cfg.OptGroup('keystone_authtoken',
                                 title='Keystone Auth Options',
@@ -275,7 +335,8 @@ def list_opts():
         'monitoring': _MONITORS,
         'keystone_authtoken': _KEYSTONE_AUTH_TOKEN,
         'fencer': _FENCER,
-        'evacuation': _EVACUATION
+        'evacuation': _EVACUATION,
+        'notifiers': _NOTIFIERS
     }
 
     return _OPTS.items()

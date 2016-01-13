@@ -15,6 +15,8 @@ from oslo_config import cfg
 from oslo_log import log
 from oslo_utils import importutils
 from osha.fencers.common.manager import FencerManager
+from time import sleep
+from osha.evacuators.common.utils import get_nodes_details
 
 CONF = cfg.CONF
 LOG = log.getLogger(__name__)
@@ -63,36 +65,40 @@ class EvacuationManager(object):
         if self.enable_fencing:
             fencer = FencerManager(nodes)
             nodes = fencer.fence()
-
+        """
+        @todo this code needs to be commented for the time being till we fix
+         nova bug found in state, which always go up afer enable or disable. We
+         will use get_node_details for the time being from the main script to
+         get nodes details before evacuating ...
         succeeded_nodes = []
         for node in nodes:
             node['instances'] = self.driver.get_node_instances(node)
             succeeded_nodes.append(node)
 
         nodes = succeeded_nodes
-
+        """
         # Start evacuation calls ...
-        from time import sleep
+
         for i in range(0, 10):
             try:
                 sleep(30)
                 evacuated_nodes = self.driver.evacuate_nodes(nodes)
+                print "Try Number: ", i
+                print evacuated_nodes
             except Exception as e:
                 LOG.error(e)
         return evacuated_nodes
+
+    def get_nodes_details(self, nodes):
+        """
+        To be re-structured after fixing the nova bug !
+        :param nodes: list of nodes
+        :return: list of node with more details
+        """
+        return get_nodes_details(nodes)
 
     def _disable_node(self, node):
         if not self.driver.is_node_disabled(node):
                 return self.driver.disable_node(node)
         else:
             True
-
-    def reinitialize_driver(self):
-        evcuation_conf = CONF.get('evacuation')
-        self.driver = importutils.import_object(
-            evcuation_conf.get('driver'),
-            evcuation_conf.get('wait'),
-            evcuation_conf.get('retries'),
-            **evcuation_conf.get('options')
-        )
-

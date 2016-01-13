@@ -16,6 +16,7 @@ from oslo_config import cfg
 from oslo_log import log
 from osha.monitors.common.manager import MonitorManager
 from osha.evacuators.common.manager import EvacuationManager
+from osha.notifiers.common.manager import NotificationManager
 
 CONF = cfg.CONF
 LOG = log.getLogger(__name__)
@@ -37,7 +38,9 @@ def main():
         # Load Fence driver
         # Shutdown the node
         evac = EvacuationManager()
+        notify_nodes = evac.get_nodes_details(nodes)
         evac.evacuate(nodes)
-        exit()
-
-        print "Fenced nodes are", nodes
+        notifier = NotificationManager()
+        notifier.notify(notify_nodes, 'success')
+    else:
+        print "No nodes reported to be down"

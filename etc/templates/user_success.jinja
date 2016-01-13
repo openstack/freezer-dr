@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+
+  <title>{{ title }}</title>
+</head>
+
+<body>
+
+<div id="content">
+  <p>Dear {{ name }}, <br />
+      One of our compute nodes failed due to some technical problem. Your instances (listed below) running in tenant {{ tenant }} Evacuated to another compute host <br />
+      Instances:  <br />
+      <table>
+          <tr>
+              <td>
+                  Instance Name
+              </td>
+              <td>
+                  IP
+              </td>
+          </tr>
+          {% for instance in instances%}
+          <tr>
+              <td> {{ instance.get('name') }} </td>
+              <td> {{ instance.get('addresses').get('internal')[0].get('addr') }} </td>
+          </tr>
+          {% endfor %}
+      </table>
+      TimeStamp: {{ evacuation_time }} <br />
+  </p>
+    <br />
+    <p>
+        Thanks for using <b>Osha !</b>
+    </p>
+</div>
+
+</body>
+</html>

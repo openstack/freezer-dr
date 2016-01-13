@@ -16,6 +16,7 @@ import os
 from osha.common.osclient import OSClient
 from oslo_config import cfg
 from oslo_log import log
+import jinja2
 
 CONF = cfg.CONF
 LOG = log.getLogger(__name__)
@@ -44,7 +45,45 @@ def get_os_client():
         user_domain_id=credentials.get('user_domain_id'),
         project_domain_id=credentials.get('project_domain_id'),
         project_domain_name=credentials.get('project_domain_name'),
-        user_domain_name=credentials.get('user_domain_name')
+        user_domain_name=credentials.get('user_domain_name'),
+        **credentials.get('kwargs')
     )
 
+    return client
+
+
+def load_jinja_templates(template_dir, template_name, template_vars):
+    """
+    Load and render existing Jinja2 templates. The main purpose of the function
+    is to prepare the message to be sent and render it for the driver to send
+    it directly
+    :param template_dir: Location where jinja2 templates are stored
+    :param template_name: name of the template to load it
+    :param template_vars: Dict to replace existing vars in the template with
+    values.
+    :return: String message
+    """
+    template_loader = jinja2.FileSystemLoader(searchpath=template_dir)
+    template_env = jinja2.Environment(loader=template_loader)
+    template = template_env.get_template(template_name)
+    return template.render(template_vars)
+
+
+def get_admin_os_client():
+    """
+    Loads credentials from [keystone_authtoken] section in the configuration
+    file and initialize the client with admin privileges and return
+    an instance of the client
+    :return: Initialized instance of OS Client
+    """
+    credentials = CONF.get('keystone_authtoken')
+    client = OSClient(
+        authurl=credentials.get('auth_url'),
+        username=credentials.get('username'),
+        password=credentials.get('password'),
+        domain_name=credentials.get('domain_name'),
+        user_domain_id=credentials.get('user_domain_id'),
+        user_domain_name=credentials.get('user_domain_name'),
+        **credentials.get('kwargs')
+    )
     return client

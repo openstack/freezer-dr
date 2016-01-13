@@ -156,26 +156,33 @@
 # available plugin for the time being (string value)
 #auth_plugin = <None>
 
-# Openstack Project Domain id, default is Default (string value)
-#project_domain_id = Default
-
-# Openstack user Domain id, default is Default (string value)
-#user_domain_id = Default
-
-# Openstack Project Domain name, default is Default (string value)
-#project_domain_name = Default
-
-# Openstack user Domain name, default is Default (string value)
-#user_domain_name = Default
-
-# Openstack Project Name. (string value)
-#project_name = services
-
 # Openstack username (string value)
 #username = <None>
 
 # Openstack Password (string value)
 #password = <None>
+
+# Openstack Project Name. (string value)
+#project_name = <None>
+
+# Openstack domain Name. (string value)
+#domain_name = <None>
+
+# Openstack Project Domain id, default is Default (string value)
+#project_domain_id = <None>
+
+# Openstack user Domain id, default is Default (string value)
+#user_domain_id = <None>
+
+# Openstack Project Domain name, default is Default (string value)
+#project_domain_name = <None>
+
+# Openstack user Domain name, default is Default (string value)
+#user_domain_name = <None>
+
+# Openstack Authentication arguments you can pass it here as Key:Value,
+# Key1:Value1, ...  (dict value)
+#kwargs =
 
 
 [monitoring]
@@ -199,3 +206,44 @@
 # List of kwargs if you want to pass it to initialize the monitoring driver.
 # should be provided in key:value format (dict value)
 #kwargs =
+
+
+[notifiers]
+
+#
+# From osha
+#
+
+# Notification driver to load it to notify users if something went wrong
+# (string value)
+#driver = osha.notifiers.drivers.osha.default_email.OshaEmail
+
+# Endpoint URL for the notification system. If you the driver you are using
+# doesnot require any URL just comment it or use none (string value)
+#endpoint = <None>
+
+# Username to authenticate against the notification system. If the driver you
+# are using doesnot require any authentications comment or use None (string
+# value)
+#username = <None>
+
+# Password to authenticate against the notification system. If the driver you
+# are using doesnot require any authentications comment or use None (string
+# value)
+#password = <None>
+
+# Path to Jinja2 templates directory that contains message templates (string
+# value)
+#templates-dir = /etc/osha/templates
+
+# Key:Value Kwargs to pass it to the notification driver, if you want to pass
+# any special arguments for your driver.   (dict value)
+#options =
+
+# List of emails to sent them notification if something went wrong and Osha
+# wasnot able to send an email to the tenant admin (list value)
+#notify-list =
+
+# The sender address, it can be email address if we used default email driver,
+# or phone number if we use sms gateway for example. (string value)
+#notify-from = <None>

@@ -16,6 +16,7 @@ from keystoneclient.auth.identity import v3
 from keystoneclient import session
 from novaclient.v2 import client as novaclient
 from neutronclient.v2_0 import client as neutronclient
+from keystoneclient.v3 import client as keystoneclient
 from oslo_log import log
 
 LOG = log.getLogger(__name__)
@@ -33,16 +34,23 @@ class OSClient:
         self.authmethod = authmethod
         self.authurl = authurl
         self.auth_session = None
+        self.endpoint_type = 'internalURL'
+        self.interface = 'internal'
         if authmethod == 'password':
-            self.username = kwargs.get('username', None)
-            self.password = kwargs.get('password')
-            self.project_name = kwargs.get('project_name', None)
-            self.project_id = kwargs.get('project_id', None)
-            self.user_id = kwargs.get('user_id', None)
-            self.user_domain_id = kwargs.get('user_domain_id', None)
-            self.user_domain_name = kwargs.get('user_domain_name', None)
-            self.project_domain_name = kwargs.get('project_domain_name', None)
-            self.endpoint_type = kwargs.get('endpoint_type', 'internal')
+            if 'endpoint_type' in kwargs:
+                self.endpoint_type = kwargs.pop('endpoint_type', 'internalURL')
+            if 'interface' in kwargs:
+                self.interface = kwargs.pop('interface', 'internal')
+            self.kwargs = kwargs
+            # self.username = kwargs.get('username', None)
+            # self.password = kwargs.get('password')
+            # self.project_name = kwargs.get('project_name', None)
+            # self.project_id = kwargs.get('project_id', None)
+            # self.user_id = kwargs.get('user_id', None)
+            # self.user_domain_id = kwargs.get('user_domain_id', None)
+            # self.user_domain_name = kwargs.get('user_domain_name', None)
+            # self.project_domain_name = kwargs.get('project_domain_name', None)
+            # self.endpoint_type = kwargs.get('endpoint_type', 'internalURL')
         else:
             print "The available authmethod is password for the time being" \
                   "Please, provide a password credentials :) "
@@ -51,12 +59,7 @@ class OSClient:
 
     def auth(self):
         auth = v3.Password(auth_url=self.authurl,
-                           username=self.username,
-                           password=self.password,
-                           project_name=self.project_name,
-                           user_domain_id=self.user_domain_id,
-                           user_domain_name=self.user_domain_name,
-                           project_domain_name=self.project_domain_name)
+                           **self.kwargs)
         self.auth_session = session.Session(auth=auth)
 
     def novacomputes(self):
@@ -205,4 +208,79 @@ class OSClient:
             return []
         return hypervisors[0].servers
 
+    def get_hypervisor(self, node):
+        """
+        Get an instance of the hypervisor, so you can do any operation you want.
+        :param node: dict contains host index
+        :return: Hypervisor
+        """
+        auth_session = session.Session(auth=self.auth_session.auth)
+        nova = novaclient.Client(session=auth_session,
+                                 endpoint_type=self.endpoint_type)
+        hypervisors = nova.hypervisors.search(node.get('host'), True)
+        if not hypervisors:
+            return None
+        return hypervisors[0]
 
+    def get_instances_list(self, node):
+        auth_session = session.Session(auth=self.auth_session.auth)
+        nova = novaclient.Client(session=auth_session,
+                                 endpoint_type=self.endpoint_type)
+        servers = nova.servers.list(detailed=True,
+                                    search_opts={'host': node.get('host'),
+                                                 'all_tenants': True})
+        servers_data = []
+        for server in servers:
+            servers_data.append(server.to_dict())
+
+        return servers_data
+
+    def get_affected_tenants(self, node):
+        return self.get_instances_list(node)
+
+    def list_tenants(self):
+        auth_session = session.Session(auth=self.auth_session.auth)
+        keystone = keystoneclient.Client(session=auth_session,
+                                         endpoint_type=self.endpoint_type)
+        projects = keystone.projects.list()
+
+        projects_data = []
+        for project in projects:
+            projects_data.append(project.to_dict())
+
+        return projects_data
+
+    def users_on_tenant(self, tenant):
+        auth_session = session.Session(auth=self.auth_session.auth)
+        keystone = keystoneclient.Client(session=auth_session,
+                                         endpoint_type=self.endpoint_type,
+                                         interface='internal')
+        users = []
+        try:
+            users = keystone.users.list(default_project=tenant)
+        except Exception as e:
+            print e
+        users_list = []
+        for user in users:
+            users_list.append(user.to_dict())
+
+        return users_list
+
+    def get_hypervisors_stats(self):
+        auth_session = session.Session(auth=self.auth_session.auth)
+        nova = novaclient.Client(session=auth_session,
+                                 endpoint_type=self.endpoint_type)
+        stats = nova.hypervisor_stats.statistics()
+        return stats.to_dict()
+
+    def get_hypervisor_details(self, node):
+        auth_session = session.Session(auth=self.auth_session.auth)
+        nova = novaclient.Client(session=auth_session,
+                                 endpoint_type=self.endpoint_type)
+        hypervisors = nova.hypervisors.list(detailed=True)
+        for hypervisor in hypervisors:
+            hypervisor = hypervisor.to_dict()
+            if hypervisor.get('hypervisor_hostname') == node.get('host'):
+                return hypervisor
+
+        return None
