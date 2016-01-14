@@ -1,9 +1,0 @@
-# hints for Saad
-We need to divide the software to be like monitoring component calling evacuation component
-We need to decide we will process host by host or all hosts at once ?
-Do we need to use threading ??
-
-in docs/diagram.pdf > Stop monitoring this node and alert admin. How can we achieve something like that with the native driver without something to maintain the status of the previous run ?
-
-After adding the notification driver, we can handle the failed nodes by triggering the driver to send notification directly to the admin ...
-
