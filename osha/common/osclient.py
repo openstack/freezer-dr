@@ -1,4 +1,5 @@
-# (c) Copyright 2014,2015 Hewlett-Packard Development Company, L.P.
+"""OpenStack client class."""
+# (c) Copyright 2016 Hewlett-Packard Development Company, L.P.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,21 +12,30 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from __future__ import print_function
+
+from keystoneclient import session
 
 from keystoneclient.auth.identity import v3
-from keystoneclient import session
-from novaclient.v2 import client as novaclient
-from neutronclient.v2_0 import client as neutronclient
+
 from keystoneclient.v3 import client as keystoneclient
+
+from neutronclient.v2_0 import client as neutronclient
+
+from novaclient.v2 import client as novaclient
+
 from oslo_log import log
+
 
 LOG = log.getLogger(__name__)
 
 
 class OSClient:
+    """Provide OpenStack credentials to initalize the connection."""
+
     def __init__(self, authurl, authmethod='password', ** kwargs):
-        """
-        Provide Openstack credentials to initalize the connection to Openstack
+        """Initialize the all class vars.
+
         :param authmethod: string authmethod should be password or token but
          currently we support only password !
         :param kwargs: username, user_id, project_name, project_id,
@@ -49,15 +59,17 @@ class OSClient:
             # self.user_id = kwargs.get('user_id', None)
             # self.user_domain_id = kwargs.get('user_domain_id', None)
             # self.user_domain_name = kwargs.get('user_domain_name', None)
-            # self.project_domain_name = kwargs.get('project_domain_name', None)
+            # self.project_domain_name =
+            #           kwargs.get('project_domain_name', None)
             # self.endpoint_type = kwargs.get('endpoint_type', 'internalURL')
         else:
-            print "The available authmethod is password for the time being" \
-                  "Please, provide a password credentials :) "
+            print("The available authmethod is password for the time being")
+            print("Please, provide a password credential.")
 
         self.auth()
 
     def auth(self):
+        """Create a session."""
         auth = v3.Password(auth_url=self.authurl,
                            **self.kwargs)
         self.auth_session = session.Session(auth=auth)
@@ -89,16 +101,16 @@ class OSClient:
     def neutronagents(self, hosts=[]):
         if not hosts:
             hosts = self.compute_hosts
-        new_sess = session.Session(auth=self.auth_session.auth)
-        neutron = neutronclient.Client(session=new_sess,
+        auth_session = session.Session(auth=self.auth_session.auth)
+        neutron = neutronclient.Client(session=auth_session,
                                        endpoint_type=self.endpoint_type)
-        self.auth_session = new_sess
+        self.auth_session = auth_session
         agents = neutron.list_agents()
         neutron_agents = []
         for agent in agents.get('agents'):
-                if agent.get('host') in hosts and agent.get('binary') == \
-                        'neutron-openvswitch-agent':
-                    neutron_agents.append(agent)
+            if agent.get('host') in hosts and agent.get('binary') == \
+                    'neutron-openvswitch-agent':
+                neutron_agents.append(agent)
 
         return neutron_agents
 
@@ -109,10 +121,10 @@ class OSClient:
         :param nodes: List of nodes to be evacuated !
         :return: List of nodes with VMs that were running on that node
         """
-        new_sess = session.Session(auth=self.auth_session.auth)
-        nova = novaclient.Client(session=new_sess,
+        auth_session = session.Session(auth=self.auth_session.auth)
+        nova = novaclient.Client(session=auth_session,
                                  endpoint_type=self.endpoint_type)
-        self.auth_session = new_sess
+        self.auth_session = auth_session
         evacuated_nodes = []
         for node in nodes:
             hypervisors = nova.hypervisors.search(node.get('host'), True)
@@ -125,15 +137,17 @@ class OSClient:
                                               on_shared_storage=True)
                     except Exception as e:
                         LOG.error(e)
-                host = {'host': node.get('host'), 'servers': hypervisor.servers}
+                host = {'host': node.get(
+                    'host'), 'servers': hypervisor.servers}
                 evacuated_nodes.append(host)
         return evacuated_nodes
 
-    def set_in_maintance(self, nodes):
-        new_sess = session.Session(auth=self.auth_session.auth)
-        nova = novaclient.Client(session=new_sess,
+    def set_in_maintenance(self, nodes):
+        """Set compute nodes in maintenance mode."""
+        auth_session = session.Session(auth=self.auth_session.auth)
+        nova = novaclient.Client(session=auth_session,
                                  endpoint_type=self.endpoint_type)
-        self.auth_session = new_sess
+        self.auth_session = auth_session
         for node in nodes:
             output = []
             host = nova.hosts.get(node)[0]
@@ -145,12 +159,13 @@ class OSClient:
             return output
 
     def get_session(self):
+        """Get the authentication section."""
         auth_session = session.Session(auth=self.auth_session.auth)
         return auth_session
 
     def get_node_status(self, node):
-        """
-        Check the node nova-service status and if it's disabled or not
+        """Check the node nova-service status and if it's disabled or not.
+
         :param node: dict contains node info
         :return: True or False. True => node disabled, False => node is enabled
         or unknow status !
@@ -172,6 +187,7 @@ class OSClient:
         return False
 
     def disable_node(self, node):
+        """Disable nova on the failing node."""
         auth_session = session.Session(auth=self.auth_session.auth)
         nova = novaclient.Client(session=auth_session,
                                  endpoint_type=self.endpoint_type)
@@ -189,7 +205,7 @@ class OSClient:
             nova.services.disable_log_reason(
                 host=node.get('host'),
                 binary=node.get('binary'),
-                reason='Host Failed and needs to be evacuated.'
+                reason='Host failed and needs to be evacuated.'
             )
             del nova
             LOG.info('Compute host: %s has been disabled to be evacuated. '
@@ -200,6 +216,7 @@ class OSClient:
         return True
 
     def get_hypervisor_instances(self, node):
+        """Get instances from an hypervisor."""
         auth_session = session.Session(auth=self.auth_session.auth)
         nova = novaclient.Client(session=auth_session,
                                  endpoint_type=self.endpoint_type)
@@ -209,8 +226,8 @@ class OSClient:
         return hypervisors[0].servers
 
     def get_hypervisor(self, node):
-        """
-        Get an instance of the hypervisor, so you can do any operation you want.
+        """Get an instance of the hypervisor.
+
         :param node: dict contains host index
         :return: Hypervisor
         """
@@ -223,6 +240,7 @@ class OSClient:
         return hypervisors[0]
 
     def get_instances_list(self, node):
+        """Get instances running on a node for all tenants."""
         auth_session = session.Session(auth=self.auth_session.auth)
         nova = novaclient.Client(session=auth_session,
                                  endpoint_type=self.endpoint_type)
@@ -239,6 +257,7 @@ class OSClient:
         return self.get_instances_list(node)
 
     def list_tenants(self):
+        """List tenants."""
         auth_session = session.Session(auth=self.auth_session.auth)
         keystone = keystoneclient.Client(session=auth_session,
                                          endpoint_type=self.endpoint_type)
@@ -251,6 +270,7 @@ class OSClient:
         return projects_data
 
     def users_on_tenant(self, tenant):
+        """List user per project."""
         auth_session = session.Session(auth=self.auth_session.auth)
         keystone = keystoneclient.Client(session=auth_session,
                                          endpoint_type=self.endpoint_type,
@@ -259,7 +279,7 @@ class OSClient:
         try:
             users = keystone.users.list(default_project=tenant)
         except Exception as e:
-            print e
+            print(e)
         users_list = []
         for user in users:
             users_list.append(user.to_dict())
@@ -267,6 +287,7 @@ class OSClient:
         return users_list
 
     def get_hypervisors_stats(self):
+        """Get stats for all hypervisors."""
         auth_session = session.Session(auth=self.auth_session.auth)
         nova = novaclient.Client(session=auth_session,
                                  endpoint_type=self.endpoint_type)
@@ -274,6 +295,7 @@ class OSClient:
         return stats.to_dict()
 
     def get_hypervisor_details(self, node):
+        """Get details about hypervisor running on the provided node."""
         auth_session = session.Session(auth=self.auth_session.auth)
         nova = novaclient.Client(session=auth_session,
                                  endpoint_type=self.endpoint_type)

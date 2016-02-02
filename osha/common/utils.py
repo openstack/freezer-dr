@@ -1,4 +1,5 @@
-# (c) Copyright 2014,2015 Hewlett-Packard Development Company, L.P.
+"""Utility functions shared from all modules into the project."""
+# (c) Copyright 2016 Hewlett-Packard Development Company, L.P.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,18 +12,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 import os
-from osha.common.osclient import OSClient
+
+import jinja2
+
 from oslo_config import cfg
 from oslo_log import log
-import jinja2
+
+from osha.common.osclient import OSClient
+
 
 CONF = cfg.CONF
 LOG = log.getLogger(__name__)
 
 
 def env(*env_vars, **kwargs):
+    """Get all environment variables."""
     for variable in env_vars:
         value = os.environ.get(variable, None)
         if value:
@@ -31,7 +36,8 @@ def env(*env_vars, **kwargs):
 
 
 def get_os_client():
-    """
+    """Return the OpenStack client.
+
     Loads credentials from [keystone_authtoken] section in the configuration
     file and initialize the client and return an instance of the client
     :return: Initialized instance of OS Client
@@ -53,14 +59,15 @@ def get_os_client():
 
 
 def load_jinja_templates(template_dir, template_name, template_vars):
-    """
-    Load and render existing Jinja2 templates. The main purpose of the function
-    is to prepare the message to be sent and render it for the driver to send
-    it directly
+    """Load and render existing Jinja2 templates.
+
+    The main purpose of the function is to prepare the message to be sent and
+    render it for the driver to send it directly.
+
     :param template_dir: Location where jinja2 templates are stored
     :param template_name: name of the template to load it
     :param template_vars: Dict to replace existing vars in the template with
-    values.
+                          values.
     :return: String message
     """
     template_loader = jinja2.FileSystemLoader(searchpath=template_dir)
@@ -70,7 +77,8 @@ def load_jinja_templates(template_dir, template_name, template_vars):
 
 
 def get_admin_os_client():
-    """
+    """Return admin client data.
+
     Loads credentials from [keystone_authtoken] section in the configuration
     file and initialize the client with admin privileges and return
     an instance of the client
