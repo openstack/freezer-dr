@@ -1,0 +1,249 @@
+[DEFAULT]
+
+#
+# From freezer-dr
+#
+
+# Time to wait between different operations (integer value)
+#wait = 30
+
+#
+# From oslo.log
+#
+
+# Print debugging output (set logging level to DEBUG instead of default WARNING
+# level). (boolean value)
+#debug = false
+
+# Print more verbose output (set logging level to INFO instead of default
+# WARNING level). (boolean value)
+#verbose = false
+
+# The name of a logging configuration file. This file is appended to any
+# existing logging configuration files. For details about logging configuration
+# files, see the Python logging module documentation. (string value)
+# Deprecated group/name - [DEFAULT]/log_config
+#log_config_append = <None>
+
+# DEPRECATED. A logging.Formatter log message format string which may use any
+# of the available logging.LogRecord attributes. This option is deprecated.
+# Please use logging_context_format_string and logging_default_format_string
+# instead. (string value)
+#log_format = <None>
+
+# Format string for %%(asctime)s in log records. Default: %(default)s . (string
+# value)
+#log_date_format = %Y-%m-%d %H:%M:%S
+
+# (Optional) Name of log file to output to. If no default is set, logging will
+# go to stdout. (string value)
+# Deprecated group/name - [DEFAULT]/logfile
+#log_file = <None>
+
+# (Optional) The base directory used for relative --log-file paths. (string
+# value)
+# Deprecated group/name - [DEFAULT]/logdir
+#log_dir = <None>
+
+# Use syslog for logging. Existing syslog format is DEPRECATED during I, and
+# will change in J to honor RFC5424. (boolean value)
+#use_syslog = false
+
+# (Optional) Enables or disables syslog rfc5424 format for logging. If enabled,
+# prefixes the MSG part of the syslog message with APP-NAME (RFC5424). The
+# format without the APP-NAME is deprecated in I, and will be removed in J.
+# (boolean value)
+#use_syslog_rfc_format = false
+
+# Syslog facility to receive log lines. (string value)
+#syslog_log_facility = LOG_USER
+
+# Log output to standard error. (boolean value)
+#use_stderr = true
+
+# Format string to use for log messages with context. (string value)
+#logging_context_format_string = %(asctime)s.%(msecs)03d %(process)d %(levelname)s %(name)s [%(request_id)s %(user_identity)s] %(instance)s%(message)s
+
+# Format string to use for log messages without context. (string value)
+#logging_default_format_string = %(asctime)s.%(msecs)03d %(process)d %(levelname)s %(name)s [-] %(instance)s%(message)s
+
+# Data to append to log format when level is DEBUG. (string value)
+#logging_debug_format_suffix = %(funcName)s %(pathname)s:%(lineno)d
+
+# Prefix each line of exception output with this format. (string value)
+#logging_exception_prefix = %(asctime)s.%(msecs)03d %(process)d TRACE %(name)s %(instance)s
+
+# List of logger=LEVEL pairs. (list value)
+#default_log_levels = amqp=WARN,amqplib=WARN,boto=WARN,qpid=WARN,sqlalchemy=WARN,suds=INFO,oslo.messaging=INFO,iso8601=WARN,requests.packages.urllib3.connectionpool=WARN,urllib3.connectionpool=WARN,websocket=WARN,requests.packages.urllib3.util.retry=WARN,urllib3.util.retry=WARN,keystonemiddleware=WARN,routes.middleware=WARN,stevedore=WARN
+
+# Enables or disables publication of error events. (boolean value)
+#publish_errors = false
+
+# Enables or disables fatal status of deprecations. (boolean value)
+#fatal_deprecations = false
+
+# The format for an instance that is passed with the log message. (string
+# value)
+#instance_format = "[instance: %(uuid)s] "
+
+# The format for an instance UUID that is passed with the log message. (string
+# value)
+#instance_uuid_format = "[instance: %(uuid)s] "
+
+
+[evacuation]
+
+#
+# From freezer-dr
+#
+
+# Time in seconds to wait between retries to disable compute node or put it in
+# maintenance mode. Default 10 seconds (string value)
+#driver = freezer_dr.evacuators.drivers.default.standard.StandardEvacuator
+
+# Time in seconds to wait between retries to disable compute node or put it in
+# maintenance mode. Default 10 seconds (integer value)
+#wait = 10
+
+# Number of retries to put node in maintenance mode before reporting failure to
+# evacuate the node (integer value)
+#retries = 1
+
+# Dict contains kwargs to be passed to the evacuator driver. In case you have
+# additional args needs to be passed to your evacuator please, list them as
+# key0:value0, key1:value1, .... (dict value)
+#options =
+
+
+[fencer]
+
+#
+# From freezer-dr
+#
+
+# YAML File contains the required credentials for compute nodes (string value)
+#credentials_file = <None>
+
+# Number of retries to fence the each compute node. Must be at least 1 to try
+# first the soft shutdown (integer value)
+#retries = 1
+
+# Time in seconds to wait between retries. Should be reasonable amount of time
+# as different servers take different times to shut off (integer value)
+#hold_period = 10
+
+# Choose the best fencer driver i.e.(ipmi, libvirt, .. (string value)
+#driver = freezer_dr.fencers.drivers.ipmi.driver.IpmiDriver
+
+# List of kwargs to customize the fencer operation. You fencer driver should
+# support these options. Options should be in key:value format (dict value)
+#options =
+
+
+[keystone_authtoken]
+
+#
+# From freezer-dr
+#
+
+# Openstack auth URI i.e. http://controller:5000 (string value)
+#auth_uri = <None>
+
+# Openstack auth URL i.e. http://controller:35357/v3 (string value)
+#auth_url = <None>
+
+# Openstack auth plugin i.e. ( password, token, ...) password is the only
+# available plugin for the time being (string value)
+#auth_plugin = <None>
+
+# Openstack username (string value)
+#username = <None>
+
+# Openstack Password (string value)
+#password = <None>
+
+# Openstack Project Name. (string value)
+#project_name = <None>
+
+# Openstack domain Name. (string value)
+#domain_name = <None>
+
+# Openstack Project Domain id, default is Default (string value)
+#project_domain_id = <None>
+
+# Openstack user Domain id, default is Default (string value)
+#user_domain_id = <None>
+
+# Openstack Project Domain name, default is Default (string value)
+#project_domain_name = <None>
+
+# Openstack user Domain name, default is Default (string value)
+#user_domain_name = <None>
+
+# Openstack Authentication arguments you can pass it here as Key:Value,
+# Key1:Value1, ...  (dict value)
+#kwargs =
+
+
+[monitoring]
+
+#
+# From freezer-dr
+#
+
+# Driver used to get a status updates of compute nodes (string value)
+#driver = freezer_dr.monitors.drivers.default.driver.StandardDriver
+
+# username to be used to initialize the monitoring driver (string value)
+#username = <None>
+
+# Password to be used for initializing monitoring driver (string value)
+#password = <None>
+
+# Monitoring system API endpoint (string value)
+#endpoint = <None>
+
+# List of kwargs if you want to pass it to initialize the monitoring driver.
+# should be provided in key:value format (dict value)
+#kwargs =
+
+
+[notifiers]
+
+#
+# From freezer-dr
+#
+
+# Notification driver to load it to notify users if something went wrong
+# (string value)
+#driver = freezer_dr.notifiers.drivers.default.default_email.StandardEmail
+
+# Endpoint URL for the notification system. If you the driver you are using
+# doesnot require any URL just comment it or use none (string value)
+#endpoint = <None>
+
+# Username to authenticate against the notification system. If the driver you
+# are using doesnot require any authentications comment or use None (string
+# value)
+#username = <None>
+
+# Password to authenticate against the notification system. If the driver you
+# are using doesnot require any authentications comment or use None (string
+# value)
+#password = <None>
+
+# Path to Jinja2 templates directory that contains message templates (string
+# value)
+#templates-dir = /etc/freezer/templates
+
+# Key:Value Kwargs to pass it to the notification driver, if you want to pass
+# any special arguments for your driver.   (dict value)
+#options =
+
+# List of emails to sent them notification if something went wrong and Freezer
+# DR wasnot able to send an email to the tenant admin (list value)
+#notify-list =
+
+# The sender address, it can be email address if we used default email driver,
+# or phone number if we use sms gateway for example. (string value)
+#notify-from = <None>
