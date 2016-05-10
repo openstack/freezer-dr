@@ -1,6 +1,6 @@
-==================
+=========================
 Freezer Disaster Recovery
-==================
+=========================
 
 freezer-dr, Openstack Compute node High Available provides compute node high availability for OpenStack.
 Simply freezer-dr monitors all compute nodes running in a cloud deployment and if there is any failure
@@ -22,15 +22,16 @@ freezer-dr should run in the control plane, however the architecture supports di
 For running freezer-dr under high availability mode, it should run with active passive mode.
 
 
------------------
+------------
 How it works
------------------
+------------
 
-Starting freezer-dr
+Starting freezer-dr:
+
 1. freezer-dr Monitoring manager is going to load the required monitoring driver according to the configuration
 2. freezer-dr will query the monitoring system to check if it considers any compute nodes to be down ?
-3.1. if no, freezer-dr will exit displaying No failed nodes
-3.2. if yes, freezer-dr will call the fencing manager to fence the failed compute node
+3. if no, freezer-dr will exit displaying No failed nodes
+3. if yes, freezer-dr will call the fencing manager to fence the failed compute node
 4. Fencing manager will load the correct fencer according to the configuration
 5. once the compute node is fenced and is powered off now we will start the evacuation process
 6. freezer-dr will load the correct evacuation driver
