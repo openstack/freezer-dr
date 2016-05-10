@@ -39,3 +39,4 @@ Starting freezer-dr:
 9. Once the evacuation process completed, freezer-dr will call the notification manager
 10. The notification manager will load the correct driver based on the configurations
 11. freezer-dr will start the notification process ...
+
