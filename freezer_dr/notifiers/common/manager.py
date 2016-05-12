@@ -38,7 +38,7 @@ class NotificationManager(object):
     def notify(self, nodes, status):
         """
         Send Notification to users added on tenants that has VMs running on the
-         affected host.
+        affected host.
         :param nodes: List of hosts that are affected, contains instances
         running on those hosts, tenants, users added on those tenants.
         :param status: success or error

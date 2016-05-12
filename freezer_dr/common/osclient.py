@@ -164,8 +164,8 @@ class OSClient:
         return auth_session
 
     def get_node_status(self, node):
-        """Check the node nova-service status and if it's disabled or not.
-
+        """
+        Check the node nova-service status and if it's disabled or not.
         :param node: dict contains node info
         :return: True or False. True => node disabled, False => node is enabled
         or unknow status !
