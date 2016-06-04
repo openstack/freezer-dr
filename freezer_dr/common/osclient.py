@@ -114,11 +114,13 @@ class OSClient:
 
         return neutron_agents
 
-    def evacuate(self, nodes):
+    def evacuate(self, nodes, shared_storage=False):
         """
         Will get the hypervisors and list all running VMs on it and then start
         Evacuating one by one ...
         :param nodes: List of nodes to be evacuated !
+        :param shared_storage: Boolean, True if your compute nodes are running
+        under shared storage and False otherwise
         :return: List of nodes with VMs that were running on that node
         """
         auth_session = session.Session(auth=self.auth_session.auth)
@@ -134,7 +136,7 @@ class OSClient:
                 for server in hypervisor.servers:
                     try:
                         nova.servers.evacuate(server.get('uuid'),
-                                              on_shared_storage=True)
+                                              on_shared_storage=shared_storage)
                     except Exception as e:
                         LOG.error(e)
                 host = {'host': node.get(

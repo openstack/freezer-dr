@@ -22,19 +22,22 @@ class EvacuatorBaseDriver(object):
     a unified interface
     """
 
-    def __init__(self, wait, retries, **kwargs):
+    def __init__(self, wait, retries, shared_storage, **kwargs):
         """
         Initialize Evacuation driver with the config args
         :param wait: time in seconds that the evcauator should wait before
         retrying to disable the node
         :param retries: Number of times the evacuator will try to disable the
         compute node
+        :param shared_storage: Boolean; True if the compute nodes are running
+        on shared storage and False otherwise
         :param kwargs: Dict of arguments that any future driver may need to
         load it from the config file
         :return: None
         """
         self.wait = wait
         self.retries = retries
+        self.shared_storage = shared_storage
         self.options = kwargs
 
     @abc.abstractmethod

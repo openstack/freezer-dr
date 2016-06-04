@@ -21,8 +21,9 @@ LOG = log.getLogger(__name__)
 
 class StandardEvacuator(EvacuatorBaseDriver):
 
-    def __init__(self, wait, retires, **kwargs):
-        super(StandardEvacuator, self).__init__(wait, retires, **kwargs)
+    def __init__(self, wait, retires, shared_storage, **kwargs):
+        super(StandardEvacuator, self).__init__(wait, retires, shared_storage,
+                                                **kwargs)
         self.client = get_os_client()
 
     def get_node_instances(self, node):
@@ -38,7 +39,7 @@ class StandardEvacuator(EvacuatorBaseDriver):
         return self.client.get_node_status(node)
 
     def evacuate_nodes(self, nodes):
-        return self.client.evacuate(nodes)
+        return self.client.evacuate(nodes, shared_storage=self.shared_storage)
 
 
 

@@ -16,11 +16,12 @@ from freezer_dr.evacuators.common.driver import EvacuatorBaseDriver
 
 class DummyEvacuator(EvacuatorBaseDriver):
     """ Evacuation driver that does nothing. Useful for testing other parts
-    of OSHA.
+    of Freezer-DR.
     """
 
-    def __init__(self, wait, retires, **kwargs):
-        super(DummyEvacuator, self).__init__(wait, retires, **kwargs)
+    def __init__(self, wait, retires, shared_storage, **kwargs):
+        super(DummyEvacuator, self).__init__(wait, retires, shared_storage,
+                                             **kwargs)
 
     def disable_node(self, node):
         return True

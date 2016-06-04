@@ -30,6 +30,7 @@ class EvacuationManager(object):
             evcuation_conf.get('driver'),
             evcuation_conf.get('wait'),
             evcuation_conf.get('retries'),
+            evcuation_conf.get('shared_storage'),
             **evcuation_conf.get('options')
         )
         self.enable_fencing = enable_fencing

@@ -130,6 +130,11 @@ _EVACUATION = [
                help='Number of retries to put node in maintenance mode before '
                'reporting failure to evacuate the node',
                dest='retries'),
+    cfg.BoolOpt('shared-storage',
+                default=False,
+                help='Set this option to True in case your compute nodes are '
+                     'running on a shared storage or False if not',
+                dest='shared_storage'),
     cfg.DictOpt(
         'options',
         default={},
