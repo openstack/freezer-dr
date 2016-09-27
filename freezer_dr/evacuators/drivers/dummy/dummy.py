@@ -15,7 +15,7 @@ from freezer_dr.evacuators.common.driver import EvacuatorBaseDriver
 
 
 class DummyEvacuator(EvacuatorBaseDriver):
-    """ Evacuation driver that does nothing. Useful for testing other parts
+    """Evacuation driver that does nothing. Useful for testing other parts
     of Freezer-DR.
     """
 
