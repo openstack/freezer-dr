@@ -18,11 +18,11 @@ from keystoneclient import session
 
 from keystoneclient.auth.identity import v3
 
-from keystoneclient.v3 import client as keystoneclient
+from keystoneclient import client as keystoneclient
 
 from neutronclient.v2_0 import client as neutronclient
 
-from novaclient.v2 import client as novaclient
+from novaclient import client as novaclient
 
 from oslo_log import log
 
@@ -46,6 +46,11 @@ class OSClient:
         self.auth_session = None
         self.endpoint_type = 'internalURL'
         self.interface = 'internal'
+        self.verify = True
+        self.insecure = kwargs.pop('insecure', False)
+        if self.insecure:
+            self.verify = not bool(self.insecure)
+
         if authmethod == 'password':
             if 'endpoint_type' in kwargs:
                 self.endpoint_type = kwargs.pop('endpoint_type', 'internalURL')
@@ -70,13 +75,30 @@ class OSClient:
 
     def auth(self):
         """Create a session."""
-        auth = v3.Password(auth_url=self.authurl,
+        auth = v3.Password(auth_url=self.authurl, reauthenticate=True,
                            **self.kwargs)
-        self.auth_session = session.Session(auth=auth)
+        self.auth_session = session.Session(auth=auth, verify=self.verify)
+
+    def get_novaclient(self):
+        if not hasattr(self, 'nova'):
+            self.auth()
+            self.nova = novaclient.Client('2', session=self.auth_session,
+                                          endpoint_type=self.endpoint_type,
+                                          insecure=self.insecure)
+        return self.nova
+
+    def get_neutronclient(self):
+        if not hasattr(self, 'neutron'):
+            self.auth()
+            self.neutron = neutronclient.Client(
+                session=self.auth_session,
+                endpoint_type=self.endpoint_type,
+                insecure=self.insecure
+            )
+        return self.neutron
 
     def novacomputes(self):
-        nova = novaclient.Client(session=self.auth_session,
-                                 endpoint_type=self.endpoint_type)
+        nova = self.get_novaclient()
         services = nova.services.list()
         compute_nodes = []
         compute_hosts = []
@@ -89,8 +111,7 @@ class OSClient:
         return compute_nodes
 
     def novahypervisors(self):
-        nova = novaclient.Client(session=self.auth_session,
-                                 endpoint_type=self.endpoint_type)
+        nova = self.get_novaclient()
         hypervisors = nova.hypervisors.list()
         nova_hypervisors = []
 
@@ -101,10 +122,7 @@ class OSClient:
     def neutronagents(self, hosts=[]):
         if not hosts:
             hosts = self.compute_hosts
-        auth_session = session.Session(auth=self.auth_session.auth)
-        neutron = neutronclient.Client(session=auth_session,
-                                       endpoint_type=self.endpoint_type)
-        self.auth_session = auth_session
+        neutron = self.get_neutronclient()
         agents = neutron.list_agents()
         neutron_agents = []
         for agent in agents.get('agents'):
@@ -123,10 +141,7 @@ class OSClient:
         under shared storage and False otherwise
         :return: List of nodes with VMs that were running on that node
         """
-        auth_session = session.Session(auth=self.auth_session.auth)
-        nova = novaclient.Client(session=auth_session,
-                                 endpoint_type=self.endpoint_type)
-        self.auth_session = auth_session
+        nova = self.get_novaclient()
         evacuated_nodes = []
         for node in nodes:
             hypervisors = nova.hypervisors.search(node.get('host'), True)
@@ -146,10 +161,7 @@ class OSClient:
 
     def set_in_maintenance(self, nodes):
         """Set compute nodes in maintenance mode."""
-        auth_session = session.Session(auth=self.auth_session.auth)
-        nova = novaclient.Client(session=auth_session,
-                                 endpoint_type=self.endpoint_type)
-        self.auth_session = auth_session
+        nova = self.get_novaclient()
         for node in nodes:
             output = []
             host = nova.hosts.get(node)[0]
@@ -162,7 +174,8 @@ class OSClient:
 
     def get_session(self):
         """Get the authentication section."""
-        auth_session = session.Session(auth=self.auth_session.auth)
+        auth_session = session.Session(auth=self.auth_session.auth,
+                                       verify=self.verify)
         return auth_session
 
     def get_node_status(self, node):
@@ -172,8 +185,7 @@ class OSClient:
         :return: True or False. True => node disabled, False => node is enabled
         or unknow status !
         """
-        nova = novaclient.Client(session=self.auth_session,
-                                 endpoint_type=self.endpoint_type)
+        nova = self.get_novaclient()
         try:
             node_service = nova.services.find(host=node.get('host'))
             del nova
@@ -190,9 +202,7 @@ class OSClient:
 
     def disable_node(self, node):
         """Disable nova on the failing node."""
-        auth_session = session.Session(auth=self.auth_session.auth)
-        nova = novaclient.Client(session=auth_session,
-                                 endpoint_type=self.endpoint_type)
+        nova = self.get_novaclient()
         try:
             node_service = nova.services.find(host=node.get('host'))
         except Exception as e:
@@ -219,9 +229,7 @@ class OSClient:
 
     def get_hypervisor_instances(self, node):
         """Get instances from an hypervisor."""
-        auth_session = session.Session(auth=self.auth_session.auth)
-        nova = novaclient.Client(session=auth_session,
-                                 endpoint_type=self.endpoint_type)
+        nova = self.get_novaclient()
         hypervisors = nova.hypervisors.search(node.get('host'), True)
         if not hypervisors:
             return []
@@ -233,9 +241,7 @@ class OSClient:
         :param node: dict contains host index
         :return: Hypervisor
         """
-        auth_session = session.Session(auth=self.auth_session.auth)
-        nova = novaclient.Client(session=auth_session,
-                                 endpoint_type=self.endpoint_type)
+        nova = self.get_novaclient()
         hypervisors = nova.hypervisors.search(node.get('host'), True)
         if not hypervisors:
             return None
@@ -243,9 +249,7 @@ class OSClient:
 
     def get_instances_list(self, node):
         """Get instances running on a node for all tenants."""
-        auth_session = session.Session(auth=self.auth_session.auth)
-        nova = novaclient.Client(session=auth_session,
-                                 endpoint_type=self.endpoint_type)
+        nova = self.get_novaclient()
         servers = nova.servers.list(detailed=True,
                                     search_opts={'host': node.get('host'),
                                                  'all_tenants': True})
@@ -273,10 +277,12 @@ class OSClient:
 
     def users_on_tenant(self, tenant):
         """List user per project."""
-        auth_session = session.Session(auth=self.auth_session.auth)
+        auth_session = session.Session(auth=self.auth_session.auth,
+                                       verify=self.verify)
         keystone = keystoneclient.Client(session=auth_session,
                                          endpoint_type=self.endpoint_type,
-                                         interface='internal')
+                                         interface='internal',
+                                         insecure=self.insecure)
         users = []
         try:
             users = keystone.users.list(default_project=tenant)
@@ -290,17 +296,13 @@ class OSClient:
 
     def get_hypervisors_stats(self):
         """Get stats for all hypervisors."""
-        auth_session = session.Session(auth=self.auth_session.auth)
-        nova = novaclient.Client(session=auth_session,
-                                 endpoint_type=self.endpoint_type)
+        nova = self.get_novaclient()
         stats = nova.hypervisor_stats.statistics()
         return stats.to_dict()
 
     def get_hypervisor_details(self, node):
         """Get details about hypervisor running on the provided node."""
-        auth_session = session.Session(auth=self.auth_session.auth)
-        nova = novaclient.Client(session=auth_session,
-                                 endpoint_type=self.endpoint_type)
+        nova = self.get_novaclient()
         hypervisors = nova.hypervisors.list(detailed=True)
         for hypervisor in hypervisors:
             hypervisor = hypervisor.to_dict()

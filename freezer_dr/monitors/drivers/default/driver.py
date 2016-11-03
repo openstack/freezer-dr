@@ -16,7 +16,9 @@ from freezer_dr.monitors.common.driver import MonitorBaseDriver
 from time import sleep
 from oslo_config import cfg
 from oslo_log import log
-from httplib import HTTPConnection, socket
+from httplib import HTTPConnection
+from httplib import HTTPSConnection
+from httplib import socket
 from urlparse import urlparse
 
 CONF = cfg.CONF
@@ -82,8 +84,12 @@ class StandardDriver(MonitorBaseDriver):
 
     def is_alive(self):
         url = urlparse(self.endpoint)
+        if url.scheme == 'https':
+            http_connector = HTTPSConnection
+        else:
+            http_connector = HTTPConnection
         try:
-            connection = HTTPConnection(host=url.netloc)
+            connection = http_connector(host=url.netloc)
             connection.request('HEAD', url=url.path)
             response = connection.getresponse()
         except socket.error:

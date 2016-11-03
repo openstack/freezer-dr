@@ -55,7 +55,6 @@ class StandardEmail(NotifierBaseDriver):
             for user in tenant.get('users'):
                 if 'email' in user:
                     subject = '[' + status + '] Evacuation Status'
-                    print tenant.get('instances')
                     template_vars = {
                         'name': user.get('name'),
                         'tenant': tenant.get('id'),

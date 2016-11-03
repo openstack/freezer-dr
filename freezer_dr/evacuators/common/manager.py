@@ -79,13 +79,14 @@ class EvacuationManager(object):
         nodes = succeeded_nodes
         """
         # Start evacuation calls ...
-
-        for i in range(0, 10):
+        evacuated_nodes = []
+        for i in range(0, self.retires):
             try:
-                sleep(30)
-                evacuated_nodes = self.driver.evacuate_nodes(nodes)
-                print "Try Number: ", i
-                print evacuated_nodes
+                sleep(self.wait)
+                nodes = self.driver.evacuate_nodes(nodes)
+                if not nodes:
+                    return evacuated_nodes
+                evacuated_nodes = nodes
             except Exception as e:
                 LOG.error(e)
         return evacuated_nodes
