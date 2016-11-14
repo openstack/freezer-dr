@@ -15,8 +15,8 @@ from freezer_dr.monitors.common.driver import MonitorBaseDriver
 
 
 class DummyDriver(MonitorBaseDriver):
-    """ 
-    A monitoring driver that returns a configured list of nodes as failed.
+    """A monitoring driver that returns a configured list of nodes as failed.
+
     This can be useful for testing without actually shutting down the nodes.
     The nodes that should be reported as failing, can be configured in the
     monitoring section of the freezer_dr configuration file as follows:
