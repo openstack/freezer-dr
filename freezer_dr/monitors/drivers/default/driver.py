@@ -26,17 +26,35 @@ LOG = log.getLogger(__name__)
 
 
 class StandardDriver(MonitorBaseDriver):
+    _OPTS = [
+        cfg.StrOpt('username',
+                   help='username to be used to initialize the default '
+                        'monitoring driver'),
+        cfg.StrOpt('password',
+                   help='Password to be used for initializing the default '
+                        'monitoring driver'),
+        cfg.StrOpt('endpoint',
+                   help='Monitoring system API endpoint'),
+        cfg.DictOpt('kwargs',
+                    default={},
+                    help='List of kwargs if you want to pass it to initialize'
+                         ' the monitoring driver. should be provided in'
+                         ' key:value format'),
+    ]
 
-    def __init__(self, username, password, endpoint, **kwargs):
-        super(StandardDriver, self).__init__(username, password, endpoint, **kwargs)
+    def __init__(self, backend_name):
+        super(StandardDriver, self).__init__(backend_name=backend_name)
+        self.endpoint = self.conf.endpoint
         client = OSClient(
-            authurl=endpoint,
-            username=username,
-            password=password,
-            **kwargs
+            authurl=self.conf.endpoint,
+            username=self.conf.username,
+            password=self.conf.password,
+            **self.conf.kwargs
         )
         LOG.info("OSClient:: username: %s, password: %s, endpoint: %s, kwargs:"
-                 " %s" % (username, '****', endpoint, kwargs))
+                 " %s" % (self.conf.username, '****', self.conf.endpoint,
+                          self.conf.kwargs)
+                 )
         self.client = client
 
     def get_data(self):

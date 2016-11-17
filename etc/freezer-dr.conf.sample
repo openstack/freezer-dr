@@ -224,18 +224,9 @@
 # Driver used to get a status updates of compute nodes (string value)
 #driver = freezer_dr.monitors.drivers.default.driver.StandardDriver
 
-# username to be used to initialize the monitoring driver (string value)
-#username = <None>
-
-# Password to be used for initializing monitoring driver (string value)
-#password = <None>
-
-# Monitoring system API endpoint (string value)
-#endpoint = <None>
-
-# List of kwargs if you want to pass it to initialize the monitoring driver.
-# should be provided in key:value format (dict value)
-#kwargs =
+# configuration section name. This should contain your monitoring specific
+# configuration options. (string value)
+#backend_name = <None>
 
 
 [notifiers]

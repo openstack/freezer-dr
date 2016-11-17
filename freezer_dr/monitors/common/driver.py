@@ -15,6 +15,10 @@
 import abc
 import six
 
+from oslo_config import cfg
+
+CONF = cfg.CONF
+
 
 @six.add_metaclass(abc.ABCMeta)
 class MonitorBaseDriver(object):
@@ -22,22 +26,19 @@ class MonitorBaseDriver(object):
     Abstract class that all monitoring plugins should implement to have a
     unified interface and as many plugins as we want...
     """
+    _OPTS = []
 
-    def __init__(self, username, password, endpoint, **kwargs):
+    def __init__(self, backend_name):
         """
         Initializing the driver. Any monitoring system requires the following
         parameters to call it's api. All these parameters can be passed from the
         configuration file in /etc/freezer/dr.conf
-        :param username: Username
-        :param password: Password
-        :param endpoint: API URL
-        :param kwargs: any additional parameters can be passed using this config
-        option.
+        :param backend_name: Name of section in the configuration file that
+        contains your driver initialization details; like username, password,
+         endpoint and so on. Variables in this section depends on your driver
         """
-        self.username = username
-        self.password = password
-        self.endpoint = endpoint
-        self.kwargs = kwargs
+        CONF.register_opts(self._OPTS, group=backend_name)
+        self.conf = CONF.get(backend_name)
 
     @abc.abstractmethod
     def get_data(self):

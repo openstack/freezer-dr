@@ -23,12 +23,10 @@ class MonitorManager(object):
 
     def __init__(self):
         monitor = CONF.get('monitoring')
+        backend_name = monitor['backend_name']
         self.driver = importutils.import_object(
-            monitor.get('driver'),
-            monitor.get('username'),
-            monitor.get('password'),
-            monitor.get('endpoint'),
-            **monitor.get('kwargs')
+            monitor.driver,
+            backend_name=backend_name
         )
         driver_info = self.driver.get_info()
         LOG.info('Initializing driver %s with version %s found in %s' %

@@ -30,17 +30,9 @@ _MONITORS = [
                default='freezer_dr.monitors.drivers.default.driver.'
                        'StandardDriver',
                help='Driver used to get a status updates of compute nodes'),
-    cfg.StrOpt('username',
-               help='username to be used to initialize the monitoring driver'),
-    cfg.StrOpt('password',
-               help='Password to be used for initializing monitoring driver'),
-    cfg.StrOpt('endpoint',
-               help='Monitoring system API endpoint'),
-    cfg.DictOpt('kwargs',
-                default={},
-                help='List of kwargs if you want to pass it to initialize'
-                ' the monitoring driver. should be provided in key:value '
-                'format')
+    cfg.StrOpt('backend_name',
+               help="configuration section name. This should contain your "
+                    "monitoring specific configuration options.")
 ]
 
 _COMMON = [
