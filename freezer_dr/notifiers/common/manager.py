@@ -45,9 +45,10 @@ class NotificationManager(object):
         :return:
         """
         for node in nodes:
-            self.driver.notify(node, status)
+            self.driver.notify_status(node, status)
 
-
+    def get_driver(self):
+        return self.driver
 
 
 

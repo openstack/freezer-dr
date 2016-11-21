@@ -28,7 +28,7 @@ class MonitorBaseDriver(object):
     """
     _OPTS = []
 
-    def __init__(self, backend_name):
+    def __init__(self, backend_name, notifier):
         """
         Initializing the driver. Any monitoring system requires the following
         parameters to call it's api. All these parameters can be passed from the
@@ -36,9 +36,15 @@ class MonitorBaseDriver(object):
         :param backend_name: Name of section in the configuration file that
         contains your driver initialization details; like username, password,
          endpoint and so on. Variables in this section depends on your driver
+
+        :param notifier: Notifier instance which can be used to notify the
+         admins in case of error or problem happened during the DR process.
+          You should only call notify method and send it your message to send
+           it to the admins
         """
         CONF.register_opts(self._OPTS, group=backend_name)
         self.conf = CONF.get(backend_name)
+        self.notifier = notifier
 
     @abc.abstractmethod
     def get_data(self):

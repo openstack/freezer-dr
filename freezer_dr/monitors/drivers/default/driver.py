@@ -42,8 +42,9 @@ class StandardDriver(MonitorBaseDriver):
                          ' key:value format'),
     ]
 
-    def __init__(self, backend_name):
-        super(StandardDriver, self).__init__(backend_name=backend_name)
+    def __init__(self, backend_name, notifier):
+        super(StandardDriver, self).__init__(backend_name=backend_name,
+                                             notifier=notifier)
         self.endpoint = self.conf.endpoint
         client = OSClient(
             authurl=self.conf.endpoint,

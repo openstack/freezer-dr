@@ -21,12 +21,13 @@ LOG = log.getLogger(__name__)
 
 class MonitorManager(object):
 
-    def __init__(self):
+    def __init__(self, notifier):
         monitor = CONF.get('monitoring')
         backend_name = monitor['backend_name']
         self.driver = importutils.import_object(
             monitor.driver,
-            backend_name=backend_name
+            backend_name=backend_name,
+            notifier=notifier
         )
         driver_info = self.driver.get_info()
         LOG.info('Initializing driver %s with version %s found in %s' %

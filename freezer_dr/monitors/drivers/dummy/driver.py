@@ -11,7 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+from oslo_config import cfg
+
 from freezer_dr.monitors.common.driver import MonitorBaseDriver
+
+CONF = cfg.CONF
 
 
 class DummyDriver(MonitorBaseDriver):
@@ -22,11 +27,18 @@ class DummyDriver(MonitorBaseDriver):
     monitoring section of the freezer_dr configuration file as follows:
     kwargs = nodes_down:hostname1;hostname2
     """
+    _OPTS = [
+        cfg.ListOpt('nodes_down',
+                    default=[],
+                    required=True,
+                    help="fake list of failed compute nodes.")
+    ]
 
-    def __init__(self, username, password, endpoint, **kwargs):
-        super(DummyDriver, self).__init__(username, password, endpoint, **kwargs)
+    def __init__(self, backend_name, notifier):
+        super(DummyDriver, self).__init__(backend_name=backend_name,
+                                          notifier=notifier)
 
-        hostnames = kwargs['nodes_down'].split(';')
+        hostnames = self.conf.get('nodes_down', [])
         self.nodes_down = [{'host': n} for n in hostnames]
 
     def get_data(self):
@@ -48,5 +60,5 @@ class DummyDriver(MonitorBaseDriver):
         return {
             'name': 'Freezer DR Dummy Driver',
             'version': 1.0,
-            'author': 'Hewlett-Packard Development Company, L.P'
+            'author': 'Hewlett-Packard Enterprise Development, L.P'
                 }

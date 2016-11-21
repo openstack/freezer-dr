@@ -44,7 +44,7 @@ class StandardEmail(NotifierBaseDriver):
             LOG.info('Logged in !')
         self.server = server
 
-    def notify(self, node, status):
+    def notify_status(self, node, status):
         _template = 'info.jinja'
         if status == 'success':
             _template = 'user_success.jinja'
@@ -101,6 +101,19 @@ class StandardEmail(NotifierBaseDriver):
             LOG.info('Email sent successfully !')
         except Exception as e:
             LOG.error(e)
+
+    def notify(self, message):
+        try:
+            self.send_email(
+                mail_from=self.notify_from,
+                mail_to=self.notify_from,
+                subject="[Freezer-DR] Problem Occurred",
+                html_msg=message,
+                cc_list=self.admin_list or []
+            )
+            return True
+        except:
+            return False
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.server.quit()

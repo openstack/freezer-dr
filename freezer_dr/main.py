@@ -26,8 +26,10 @@ def main():
     config.configure()
     config.setup_logging()
     LOG.info('Starting Freezer DR ... ')
+    # initialize the notification driver as it will be used in many parts
+    notifier = NotificationManager()
     # load and initialize the monitoring driver
-    monitor = MonitorManager()
+    monitor = MonitorManager(notifier=notifier.get_driver())
     # Do the monitoring procedure
     # Monitor, analyse, nodes down ?, wait, double check ? evacuate ..
     nodes = monitor.monitor()
@@ -40,7 +42,6 @@ def main():
         evac = EvacuationManager()
         notify_nodes = evac.get_nodes_details(nodes)
         evac.evacuate(nodes)
-        notifier = NotificationManager()
         notifier.notify(notify_nodes, 'success')
     else:
         print "No nodes reported to be down"

@@ -82,8 +82,9 @@ class MonascaDriver(driver.MonitorBaseDriver):
                         "Default is all")
     ]
 
-    def __init__(self, backend_name):
-        super(MonascaDriver, self).__init__(backend_name=backend_name)
+    def __init__(self, backend_name, notifier):
+        super(MonascaDriver, self).__init__(backend_name=backend_name,
+                                            notifier=notifier)
         self.monasca_client = client.Client(
             "2_0",
             self.conf['monasca_url'],
@@ -198,7 +199,9 @@ class MonascaDriver(driver.MonitorBaseDriver):
         for node, metrics in nodes.iteritems():
             node_data = {node: []}
             for metric_name, metric_data in metrics.iteritems():
-                node_data[node].append(self.__process_metric(metric_name, metric_data))
+                node_data[node].append(
+                    self.__process_metric(node, metric_name, metric_data)
+                )
             nodes_data.append(node_data)
 
         aggregate = self.conf.get('aggregate', 'all')
@@ -221,7 +224,7 @@ class MonascaDriver(driver.MonitorBaseDriver):
             if True in host.values()
             ]
 
-    def __process_metric(self, metric_name, metric_data):
+    def __process_metric(self, node, metric_name, metric_data):
         metric_conf = CONF[metric_name]
         # process UNDETERMINED State and change it to the required state
         metric_data = [
@@ -229,6 +232,30 @@ class MonascaDriver(driver.MonitorBaseDriver):
             metric_conf.get('undetermined', 'ALARM').upper()
             for i in metric_data
         ]
+        if not metric_data:
+            message = """
+            No data found for this metric: {0} <br />
+            Data returned: {1} <br />
+            hostname: {2} <br />
+            Cause might be: <br />
+            <ul>
+            <li>Metric is not defined in Monasca </li>
+            <li>Alarm with this metric name is not set for this host </li>
+            <li>Check your Monasca configuration and Metric configuration
+                 defined in freezer-dr.conf </li>
+            </ul>
+            You can try this command to check: <br />
+            $ monasca alarm-list --metric-name {3} --metric-dimensions
+                  hostname={2}
+            <br /> <br />
+            Freezer-DR
+            """.format(metric_name, str(metric_data), node,
+                       metric_conf['metric_name'])
+            self.notifier.notify(message)
+            LOG.warning("No data found for metric: {0} on host: {1}".format(
+                metric_name, node
+            ))
+            exit(1)
         # build the decision
         aggregate = metric_conf.get('aggregate')
         aggregate += "(x=='ALARM' for x in metric_data)"

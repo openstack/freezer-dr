@@ -17,15 +17,13 @@ import abc
 
 @six.add_metaclass(abc.ABCMeta)
 class NotifierBaseDriver(object):
-    """
-    Used to notify admins/users at any stage that an error happened or process
-    completed or something went wrong !
+    """ Used to notify admins/users at any stage that an error happened or
+    process completed or something went wrong !
     """
 
     def __init__(self, url, username, password, templates_dir, notify_from,
                  admin_list=None, **kwargs):
-        """
-        Initialize the notification backend.
+        """ Initialize the notification backend.
         :param url: Notification system backend
         :param username: Username
         :param password: Password
@@ -42,12 +40,20 @@ class NotifierBaseDriver(object):
         self.options = kwargs
 
     @abc.abstractmethod
-    def notify(self, node, status):
-        """
-        Custom notification method. Can be used if you want to send custom
+    def notify_status(self, node, status):
+        """ Custom notification method. Can be used if you want to send custom
         notification about Tenant, Instance, or go deeper if you want
         :param node: Compute Host, Tenant, Instance, ...
         :param status: Error, Success, Info
         :return: True, False
+        """
+        pass
+
+    @abc.abstractmethod
+    def notify(self, message):
+        """ This method will be used in different places to notify admins
+        about certain problem
+        :param message: String message name
+        :return:
         """
         pass
