@@ -28,6 +28,10 @@ LOG = log.getLogger(__name__)
 
 
 class MonascaDriver(driver.MonitorBaseDriver):
+    """Monasca monitoring driver to monitor compute nodes. It makes use of
+    Monasca to monitor the compute nodes. Metric information needed. 'hostname'
+     must be used in dimensions to filter the values in alarms. You need to
+     define alarms for all hosts with the required metrics."""
 
     _OPTS = [
         cfg.StrOpt('keystone_url',
@@ -101,7 +105,7 @@ class MonascaDriver(driver.MonitorBaseDriver):
             )
         self.nodes = self.get_compute_nodes()
         # register metric options in their groups and load their values
-        self.load_metrics()
+        self.__load_metrics()
 
     def _get_raw_data(self):
         """ This function returns the raw data we got from Monasca before
@@ -171,6 +175,7 @@ class MonascaDriver(driver.MonitorBaseDriver):
         return self.conf['metrics']
 
     def _build_metrics(self, metric, hostname=None):
+        """Build the query to send to Monasca"""
         metric = CONF[metric]
         dimensions = {'hostname': hostname}
         dimensions.update(metric.get('dimensions', {}))
@@ -188,7 +193,7 @@ class MonascaDriver(driver.MonitorBaseDriver):
             2. ALARM
             3. UNDEFINED
         """
-        # @todo use list comprehension instead of loops
+        # @todo(szaher) use list comprehension instead of loops
         # list below is correct and should return the extact same value like
         # the two nested for loops
         # nodes_down = [
@@ -225,6 +230,10 @@ class MonascaDriver(driver.MonitorBaseDriver):
             ]
 
     def __process_metric(self, node, metric_name, metric_data):
+        """Process metric values got from Monasca.
+        Handles UNDETERMINED states and changes it to required state(read
+        from config file).
+        If no metric data found,"""
         metric_conf = CONF[metric_name]
         # process UNDETERMINED State and change it to the required state
         metric_data = [
@@ -244,9 +253,10 @@ class MonascaDriver(driver.MonitorBaseDriver):
             <li>Check your Monasca configuration and Metric configuration
                  defined in freezer-dr.conf </li>
             </ul>
-            You can try this command to check: <br />
+            You can try this command to check: <br /><code>
             $ monasca alarm-list --metric-name {3} --metric-dimensions
                   hostname={2}
+            </code>
             <br /> <br />
             Freezer-DR
             """.format(metric_name, str(metric_data), node,
@@ -292,12 +302,14 @@ class MonascaDriver(driver.MonitorBaseDriver):
         client = utils.get_os_client()
         return client.novacomputes()
 
-    def load_metrics(self):
+    def __load_metrics(self):
+        """load custom sections created by user"""
         for metric in self.conf.metrics:
-            CONF.register_opts(self._metric_opts, group=metric)
+            CONF.register_opts(self.__metric_opts, group=metric)
 
     @property
-    def _metric_opts(self):
+    def __metric_opts(self):
+        """List of options to be used in metric defined sections"""
         return [
             cfg.StrOpt("metric_name",
                        help="Metric Name used to log monitoring information"
