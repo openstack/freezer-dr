@@ -176,41 +176,41 @@
 # From freezer-dr
 #
 
-# Openstack auth URI i.e. http://controller:5000 (string value)
+# OpenStack auth URI i.e. http://controller:5000 (string value)
 #auth_uri = <None>
 
-# Openstack auth URL i.e. http://controller:35357/v3 (string value)
+# OpenStack auth URL i.e. http://controller:35357/v3 (string value)
 #auth_url = <None>
 
-# Openstack auth plugin i.e. ( password, token, ...) password is the only
+# OpenStack auth plugin i.e. ( password, token, ...) password is the only
 # available plugin for the time being (string value)
 #auth_plugin = <None>
 
-# Openstack username (string value)
+# OpenStack username (string value)
 #username = <None>
 
-# Openstack Password (string value)
+# OpenStack Password (string value)
 #password = <None>
 
-# Openstack Project Name. (string value)
+# OpenStack Project Name. (string value)
 #project_name = <None>
 
-# Openstack domain Name. (string value)
+# OpenStack domain Name. (string value)
 #domain_name = <None>
 
-# Openstack Project Domain id, default is Default (string value)
+# OpenStack Project Domain id, default is Default (string value)
 #project_domain_id = <None>
 
-# Openstack user Domain id, default is Default (string value)
+# OpenStack user Domain id, default is Default (string value)
 #user_domain_id = <None>
 
-# Openstack Project Domain name, default is Default (string value)
+# OpenStack Project Domain name, default is Default (string value)
 #project_domain_name = <None>
 
-# Openstack user Domain name, default is Default (string value)
+# OpenStack user Domain name, default is Default (string value)
 #user_domain_name = <None>
 
-# Openstack Authentication arguments you can pass it here as Key:Value,
+# OpenStack Authentication arguments you can pass it here as Key:Value,
 # Key1:Value1, ...  (dict value)
 #kwargs =
 

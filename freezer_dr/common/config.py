@@ -66,39 +66,39 @@ _FENCER = [
 
 _KEYSTONE_AUTH_TOKEN = [
     cfg.StrOpt('auth_uri',
-               help='Openstack auth URI i.e. http://controller:5000',
+               help='OpenStack auth URI i.e. http://controller:5000',
                dest='auth_uri'), cfg.StrOpt(
                    'auth_url',
-                   help='Openstack auth URL i.e. http://controller:35357/v3',
+                   help='OpenStack auth URL i.e. http://controller:35357/v3',
                    dest='auth_url'),
     cfg.StrOpt('auth_plugin',
-               help='Openstack auth plugin i.e. ( password, token, ...) '
+               help='OpenStack auth plugin i.e. ( password, token, ...) '
                'password is the only available plugin for the time being',
                dest='auth_plugin'), cfg.StrOpt('username',
-                                               help='Openstack username',
+                                               help='OpenStack username',
                                                dest='username'),
     cfg.StrOpt('password',
-               help='Openstack Password',
+               help='OpenStack Password',
                dest='password'), cfg.StrOpt('project_name',
-                                            help='Openstack Project Name.',
+                                            help='OpenStack Project Name.',
                                             dest='project_name'),
     cfg.StrOpt('domain_name',
-               help='Openstack domain Name.',
+               help='OpenStack domain Name.',
                dest='domain_name'), cfg.StrOpt(
                    'project_domain_id',
-                   help='Openstack Project Domain id, default is Default',
+                   help='OpenStack Project Domain id, default is Default',
                    dest='project_domain_id'),
     cfg.StrOpt('user_domain_id',
-               help='Openstack user Domain id, default is Default',
+               help='OpenStack user Domain id, default is Default',
                dest='user_domain_id'), cfg.StrOpt(
                    'project_domain_name',
-                   help='Openstack Project Domain name, default is Default',
+                   help='OpenStack Project Domain name, default is Default',
                    dest='project_domain_name'), cfg.StrOpt(
                        'user_domain_name',
-                       help='Openstack user Domain name, default is Default',
+                       help='OpenStack user Domain name, default is Default',
                        dest='user_domain_name'),
     cfg.DictOpt('kwargs',
-                help='Openstack Authentication arguments you can pass it here '
+                help='OpenStack Authentication arguments you can pass it here '
                 'as Key:Value, Key1:Value1, ... ',
                 dest='kwargs',
                 default={})
@@ -305,7 +305,7 @@ def configure():
     # Keystone Auth
     keystone_grp = cfg.OptGroup('keystone_authtoken',
                                 title='Keystone Auth Options',
-                                help='Openstack Credentials to call the nova '
+                                help='OpenStack Credentials to call the nova '
                                 'APIs to evacuate ')
     CONF.register_group(keystone_grp)
     CONF.register_opts(_KEYSTONE_AUTH_TOKEN, group='keystone_authtoken')
