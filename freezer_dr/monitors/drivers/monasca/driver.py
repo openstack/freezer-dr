@@ -103,7 +103,10 @@ class MonascaDriver(driver.MonitorBaseDriver):
             insecure=self.conf.get('insecure'),
             cacert=self.conf.get('cacert', None)
             )
-        self.nodes = self.get_compute_nodes()
+        # Compute nodes might be disabled or set to maintenance mode so
+        # freezer-dr needs to process only enabled nodes ...
+        self.nodes = [node for node in self.get_compute_nodes()
+                      if node['status'] == "enabled"]
         # register metric options in their groups and load their values
         self.__load_metrics()
 
