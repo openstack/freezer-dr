@@ -41,7 +41,11 @@ def main():
         # Shutdown the node
         evac = EvacuationManager()
         notify_nodes = evac.get_nodes_details(nodes)
-        evac.evacuate(nodes)
+        evacuated_nodes, failed_nodes = evac.evacuate(nodes)
+        LOG.debug("Successfully evacuated nodes {0}".format(evacuated_nodes))
+        LOG.debug("Failed to evacuate nodes {0}".format(failed_nodes))
         notifier.notify(notify_nodes, 'success')
+        failed_nodes = evac.get_nodes_details(failed_nodes)
+        notifier.notify(failed_nodes, 'error')
     else:
         print "No nodes reported to be down"

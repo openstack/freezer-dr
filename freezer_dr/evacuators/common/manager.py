@@ -25,71 +25,19 @@ LOG = log.getLogger(__name__)
 class EvacuationManager(object):
 
     def __init__(self, enable_fencing=True):
-        evcuation_conf = CONF.get('evacuation')
-        self.driver = importutils.import_object(
-            evcuation_conf.get('driver'),
-            evcuation_conf.get('wait'),
-            evcuation_conf.get('retries'),
-            evcuation_conf.get('shared_storage'),
-            **evcuation_conf.get('options')
-        )
         self.enable_fencing = enable_fencing
-        self.wait = evcuation_conf.get('wait')
-        self.retires = evcuation_conf.get('retries', 1)
-        if self.retires <= 0:
-            self.retires = 1
 
     def evacuate(self, nodes):
-        # try to disable node
-        # @todo needs more error handling like if the status didn't update or
-        # we are unable to disable the node ???
-        failed_nodes = []  # maintain nodes that are going to fail at any state
-        succeeded_nodes = []
-        for node in nodes:
-            for i in range(0, self.retires):
-                status = self._disable_node(node)
-                # if True ( node disabled ) break the loop
-                if status:
-                    break
-                else:
-                    status = False
-            node['status'] = status
-            # make sure the disable request was successful
-            if not self.driver.get_node_status(node):
-                failed_nodes.append(node)
-                nodes.remove(node)  # if the node failed at any step no reason
-                # to move it to the next step
-            else:
-                succeeded_nodes.append(node)
+        fencer = FencerManager(nodes)
+        evacuation_conf = CONF.get('evacuation')
+        driver = importutils.import_object(
+            evacuation_conf['driver'],
+            nodes,
+            evacuation_conf,
+            fencer
+        )
 
-        nodes = succeeded_nodes
-        if self.enable_fencing:
-            fencer = FencerManager(nodes)
-            nodes = fencer.fence()
-        """
-        @todo this code needs to be commented for the time being till we fix
-         nova bug found in state, which always go up afer enable or disable. We
-         will use get_node_details for the time being from the main script to
-         get nodes details before evacuating ...
-        succeeded_nodes = []
-        for node in nodes:
-            node['instances'] = self.driver.get_node_instances(node)
-            succeeded_nodes.append(node)
-
-        nodes = succeeded_nodes
-        """
-        # Start evacuation calls ...
-        evacuated_nodes = []
-        for i in range(0, self.retires):
-            try:
-                sleep(self.wait)
-                nodes = self.driver.evacuate_nodes(nodes)
-                if not nodes:
-                    return evacuated_nodes
-                evacuated_nodes = nodes
-            except Exception as e:
-                LOG.error(e)
-        return evacuated_nodes
+        return driver.evacuate(self.enable_fencing)
 
     def get_nodes_details(self, nodes):
         """
@@ -98,9 +46,3 @@ class EvacuationManager(object):
         :return: list of node with more details
         """
         return get_nodes_details(nodes)
-
-    def _disable_node(self, node):
-        if not self.driver.is_node_disabled(node):
-                return self.driver.disable_node(node)
-        else:
-            True
