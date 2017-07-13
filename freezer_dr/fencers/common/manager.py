@@ -14,8 +14,7 @@
 from oslo_config import cfg
 from oslo_log import log
 from oslo_utils import importutils
-from freezer_dr.common.yaml_parser import YamlParser
-from time import sleep
+
 
 CONF = cfg.CONF
 LOG = log.getLogger(__name__)
@@ -24,51 +23,20 @@ LOG = log.getLogger(__name__)
 class FencerManager(object):
 
     def __init__(self, nodes):
-        self.fencer = CONF.get('fencer')
+        self.fencer_conf = CONF.get('fencer')
         self.nodes = nodes
-        self.parser = YamlParser(self.fencer.get('credentials_file'))
 
     def fence(self):
         """
         Try to shutdown nodes and wait for configurable amount of times
         :return: list of nodes and either they are shutdown or failed
         """
-        processed_nodes = []
-        for node in self.nodes:
-            node_details = self.parser.find_server_by_ip(node.get('ip')) or\
-                           self.parser.find_server_by_hostname(node.get('host'))
-            driver = importutils.import_object(
-                self.fencer.get('driver'),
-                node=node_details,
-                **self.fencer.get('options')
-            )
-            node['status'] = self.do_shutdown_procedure(driver)
-            processed_nodes.append(node)
-        return processed_nodes
+        driver_name = self.fencer_conf['driver']
+        driver = importutils.import_object(
+            driver_name,
+            self.fencer_conf
+        )
+        LOG.debug('Loaded fencing driver {0} with config: '
+                  '{1}'.format(driver.get_info(), self.fencer_conf))
 
-    def do_shutdown_procedure(self, driver):
-        for retry in range(0, self.fencer.get('retries', 1)):
-            if driver.status():
-                try:
-                    driver.graceful_shutdown()
-                except Exception as e:
-                    LOG.error(e)
-            else:
-                return True
-            # try to wait a pre-configured amount of time before redoing
-            # the fence call again :)
-            sleep(self.fencer.get('hold_period', 10))
-            LOG.info('wait for %d seconds before retrying to gracefully '
-                     'shutdown' % self.fencer.get('hold_period', 10))
-            LOG.info('Retrying to gracefully shutdown the node.')
-
-        try:
-            driver.force_shutdown()
-        except Exception as e:
-            LOG.error(e)
-
-        if not driver.status():
-            return True
-
-        return False
-
+        return driver.fence()

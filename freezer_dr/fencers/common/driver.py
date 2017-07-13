@@ -15,7 +15,6 @@
 """Abstract fencer"""
 
 import abc
-
 import six
 
 
@@ -28,38 +27,29 @@ class FencerBaseDriver(object):
     needed.
     """
 
-    def __init__(self, node, **kwargs):
+    def __init__(self, nodes, fencer_conf):
         """Initialize the driver.
 
         Any fencer driver requires the following parameters to do the api
         calls. All these parameters can be passed from the configuration
         file in /etc/freezer/dr.conf (default).
 
-        :param node: dict with all node details. (/etc/freezer/servers.yml) ?
-        :param kwargs: any additional parameters can be passed using this
-                       config option.
+        :param nodes: A list of failed nodes to be fenced!
+        :param fencer_conf: dict contains configuration options loaded 
+        from the config file.
         """
-        self.node = node
-        self.kwargs = kwargs
+        self.nodes = nodes
+        self.fencer_conf = fencer_conf
+
+    def update_nodes(self, nodes):
+        """Allows changing the nodes during the evacuation..."""
+        self.nodes = nodes
 
     @abc.abstractmethod
-    def graceful_shutdown(self):
-        """Gracefully shutdown the compute node to evacuate it."""
-
-    @abc.abstractmethod
-    def force_shutdown(self):
-        """Force shutdown the compute node to evacuate it.
-
-        May be you can try force shutdown if the graceful shutdown failed.
-        """
-
-    @abc.abstractmethod
-    def status(self):
-        """Get compute node status.
-
-        Should return 1 if on and 0 if off or -1 if error or unknown power
-        status.
-        """
+    def fence(self):
+        """This function to be implemented by each driver. Each driver will 
+        implement its own fencing logic and the manager will just load it and 
+        call the fence function"""
 
     @abc.abstractmethod
     def get_info(self):
