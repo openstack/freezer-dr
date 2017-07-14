@@ -19,9 +19,8 @@ class DummyEvacuator(EvacuatorBaseDriver):
     of Freezer-DR.
     """
 
-    def __init__(self, wait, retires, shared_storage, **kwargs):
-        super(DummyEvacuator, self).__init__(wait, retires, shared_storage,
-                                             **kwargs)
+    def __init__(self, nodes, evacuator_conf, fencer):
+        super(DummyEvacuator, self).__init__(nodes, evacuator_conf, fencer)
 
     def disable_node(self, node):
         return True
