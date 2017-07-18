@@ -35,20 +35,16 @@ class FencerBaseDriver(object):
         file in /etc/freezer/dr.conf (default).
 
         :param nodes: A list of failed nodes to be fenced!
-        :param fencer_conf: dict contains configuration options loaded 
+        :param fencer_conf: dict contains configuration options loaded
         from the config file.
         """
         self.nodes = nodes
         self.fencer_conf = fencer_conf
 
-    def update_nodes(self, nodes):
-        """Allows changing the nodes during the evacuation..."""
-        self.nodes = nodes
-
     @abc.abstractmethod
     def fence(self):
-        """This function to be implemented by each driver. Each driver will 
-        implement its own fencing logic and the manager will just load it and 
+        """This function to be implemented by each driver. Each driver will
+        implement its own fencing logic and the manager will just load it and
         call the fence function"""
 
     @abc.abstractmethod
