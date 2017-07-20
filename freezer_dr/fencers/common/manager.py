@@ -26,14 +26,18 @@ class FencerManager(object):
         self.fencer_conf = CONF.get('fencer')
         self.nodes = nodes
 
-    def fence(self):
+    def fence(self, nodes=None):
         """
         Try to shutdown nodes and wait for configurable amount of times
         :return: list of nodes and either they are shutdown or failed
         """
+        # update the list of nodes if required!
+        if nodes:
+            self.nodes = nodes
         driver_name = self.fencer_conf['driver']
         driver = importutils.import_object(
             driver_name,
+            self.nodes,
             self.fencer_conf
         )
         LOG.debug('Loaded fencing driver {0} with config: '

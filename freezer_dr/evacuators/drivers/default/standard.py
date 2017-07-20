@@ -64,8 +64,7 @@ class StandardEvacuator(EvacuatorBaseDriver):
 
         nodes = succeeded_nodes
         if enable_fencing:
-            self.fencer.update_nodes(nodes)
-            nodes = self.fencer.fence()
+            nodes = self.fencer.fence(nodes=nodes)
         """
         @todo this code needs to be commented for the time being till we fix
          nova bug found in state, which always go up afer enable or disable. We
