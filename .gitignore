@@ -9,8 +9,7 @@ cover/
 coverage.xml
 *.sw?
 .tox
-*.egg
-*.egg-info
+*.egg*
 *.py[co]
 .DS_Store
 *.log
