@@ -50,12 +50,6 @@ class MonascaDriver(driver.MonitorBaseDriver):
         cfg.BoolOpt('insecure',
                     help='Use insecure connection.',
                     default=False),
-        cfg.BoolOpt('include_catalog',
-                    help='Include service catalog.',
-                    default=True),
-        cfg.StrOpt('interface',
-                   help='Interface (internal, public, admin) ',
-                   default='internal'),
         cfg.StrOpt('project_domain_id',
                    help="Project Domain Id. Default is default",
                    default='default'),
@@ -98,8 +92,6 @@ class MonascaDriver(driver.MonitorBaseDriver):
             project_name=self.conf['project_name'],
             user_doamin_id=self.conf['user_domain_id'],
             project_doamin_id=self.conf['project_domain_id'],
-            interface=self.conf['interface'],
-            include_catalog=self.conf.get('include_catalog'),
             insecure=self.conf.get('insecure'),
             cacert=self.conf.get('cacert', None)
             )
