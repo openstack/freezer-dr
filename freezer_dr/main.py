@@ -11,6 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+from __future__ import print_function
+
 from freezer_dr.common import config
 from oslo_config import cfg
 from oslo_log import log
@@ -48,4 +51,4 @@ def main():
         failed_nodes = evac.get_nodes_details(failed_nodes)
         notifier.notify(failed_nodes, 'error')
     else:
-        print "No nodes reported to be down"
+        print("No nodes reported to be down")
