@@ -36,7 +36,7 @@ class YamlParser(object):
         if not os.path.exists(self.file) or not os.path.isfile(self.file):
             raise Exception('File desnot exists')
 
-        stream = file(self.file, 'r')
+        stream = open(self.file, 'r')
         data = yaml.load(stream)
         return data
 
