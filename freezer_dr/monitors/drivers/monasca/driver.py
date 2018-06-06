@@ -147,7 +147,7 @@ class MonascaDriver(driver.MonitorBaseDriver):
         """
         data = self._get_raw_data()
         data2 = {}
-        for host, metric_results in data.iteritems():
+        for host, metric_results in data.items():
             data2[host] = {}
             for metric_name, metric_values in metric_results.iteritems():
                 data2[host][metric_name] = []
