@@ -23,16 +23,16 @@ LOG = log.getLogger(__name__)
 class NotificationManager(object):
 
     def __init__(self):
-        notifer_conf = CONF.get('notifiers')
+        notifier_conf = CONF.get('notifiers')
         self.driver = importutils.import_object(
-            notifer_conf.get('driver'),
-            notifer_conf.get('endpoint'),
-            notifer_conf.get('username'),
-            notifer_conf.get('password'),
-            notifer_conf.get('templates-dir'),
-            notifer_conf.get('notify-from'),
-            notifer_conf.get('notify-list'),
-            **notifer_conf.get('options')
+            notifier_conf.get('driver'),
+            notifier_conf.get('endpoint'),
+            notifier_conf.get('username'),
+            notifier_conf.get('password'),
+            notifier_conf.get('templates-dir'),
+            notifier_conf.get('notify-from'),
+            notifier_conf.get('notify-list'),
+            **notifier_conf.get('options')
         )
 
     def notify(self, nodes, status):
