@@ -46,6 +46,8 @@ class StandardEmail(NotifierBaseDriver):
 
     def notify_status(self, node, status):
         _template = 'info.jinja'
+        if status == 'original':
+            _template = 'original.jinja'
         if status == 'success':
             _template = 'user_success.jinja'
         elif status == 'error':
