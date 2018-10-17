@@ -37,3 +37,5 @@ class DummyEvacuator(EvacuatorBaseDriver):
     def get_node_instances(self, node):
         raise NotImplementedError
 
+    def get_info(self):
+        raise NotImplementedError

@@ -106,3 +106,11 @@ class StandardEvacuator(EvacuatorBaseDriver):
     def evacuate_nodes(self, nodes):
         return self.client.evacuate(
             nodes, shared_storage=self.evacuator_conf['shared_storage'])
+
+    def get_info(self):
+        """
+        To be implemented.
+        Get Driver Information
+        :return: Dict contains driver information
+        """
+        raise NotImplementedError
