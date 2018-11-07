@@ -11,12 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from freezer_dr.evacuators.common.utils import get_nodes_details
+from freezer_dr.fencers.common.manager import FencerManager
 from oslo_config import cfg
 from oslo_log import log
 from oslo_utils import importutils
-from freezer_dr.fencers.common.manager import FencerManager
 from time import sleep
-from freezer_dr.evacuators.common.utils import get_nodes_details
 
 CONF = cfg.CONF
 LOG = log.getLogger(__name__)

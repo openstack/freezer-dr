@@ -13,12 +13,15 @@
 # limitations under the License.
 from freezer_dr.common.osclient import OSClient
 from freezer_dr.monitors.common.driver import MonitorBaseDriver
-from time import sleep
-from oslo_config import cfg
-from oslo_log import log
+
 from httplib import HTTPConnection
 from httplib import HTTPSConnection
 from httplib import socket
+
+from oslo_config import cfg
+from oslo_log import log
+from time import sleep
+
 from urlparse import urlparse
 
 CONF = cfg.CONF

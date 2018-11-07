@@ -14,8 +14,8 @@
 from freezer_dr.common.yaml_parser import YamlParser
 from freezer_dr.fencers.common.driver import FencerBaseDriver
 import libvirt
-from oslo_log import log
 from oslo_config import cfg
+from oslo_log import log
 import time
 
 CONF = cfg.CONF

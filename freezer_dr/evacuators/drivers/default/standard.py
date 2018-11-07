@@ -11,11 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from freezer_dr.common.utils import get_os_client
+from freezer_dr.evacuators.common.driver import EvacuatorBaseDriver
 from oslo_config import cfg
 from oslo_log import log
-from freezer_dr.evacuators.common.driver import EvacuatorBaseDriver
-from freezer_dr.common.utils import get_os_client
 import time
+
 CONF = cfg.CONF
 LOG = log.getLogger(__name__)
 

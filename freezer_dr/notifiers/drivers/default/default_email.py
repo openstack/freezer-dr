@@ -11,15 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from oslo_config import cfg
-from oslo_log import log
-from freezer_dr.notifiers.common.driver import NotifierBaseDriver
-from freezer_dr.common.utils import load_jinja_templates
 from datetime import date
-import time
-import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from freezer_dr.common.utils import load_jinja_templates
+from freezer_dr.notifiers.common.driver import NotifierBaseDriver
+from oslo_config import cfg
+from oslo_log import log
+import smtplib
+import time
 
 
 CONF = cfg.CONF
@@ -114,7 +114,7 @@ class StandardEmail(NotifierBaseDriver):
                 cc_list=self.admin_list or []
             )
             return True
-        except:
+        except Exception:
             return False
 
     def __exit__(self, exc_type, exc_val, exc_tb):

@@ -11,17 +11,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from oslo_log import log
-from freezer_dr.notifiers.common.driver import NotifierBaseDriver
 from datetime import date
-from six.moves import urllib
-import requests
+from freezer_dr.notifiers.common.driver import NotifierBaseDriver
 import json
+from oslo_log import log
+import requests
+from six.moves import urllib
 import time
 
 
 LOG = log.getLogger(__name__)
-
 
 class SlackNotifier(NotifierBaseDriver):
 

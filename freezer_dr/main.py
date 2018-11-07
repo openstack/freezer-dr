@@ -15,11 +15,12 @@
 from __future__ import print_function
 
 from freezer_dr.common import config
+from freezer_dr.evacuators.common.manager import EvacuationManager
+from freezer_dr.monitors.common.manager import MonitorManager
+from freezer_dr.notifiers.common.manager import NotificationManager
 from oslo_config import cfg
 from oslo_log import log
-from freezer_dr.monitors.common.manager import MonitorManager
-from freezer_dr.evacuators.common.manager import EvacuationManager
-from freezer_dr.notifiers.common.manager import NotificationManager
+
 
 CONF = cfg.CONF
 LOG = log.getLogger(__name__)

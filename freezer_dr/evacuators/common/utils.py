@@ -11,7 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from freezer_dr.common.utils import get_os_client, get_admin_os_client
+from freezer_dr.common.utils import get_admin_os_client
+from freezer_dr.common.utils import get_os_client
 
 
 def get_nodes_details(nodes):

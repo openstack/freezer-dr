@@ -12,10 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
-import subprocess
 from distutils import spawn
 from oslo_log import log
+
+import subprocess
+import sys
+
 
 LOG = log.getLogger(__name__)
 
