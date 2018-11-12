@@ -23,7 +23,7 @@ ChangeLog
 .coverage.*
 
 # sphinx
-doc/source/_static/nova.conf.sample
+doc/source/_static/*.sample
 doc/source/api/*
 doc/build/*
 
