@@ -241,7 +241,7 @@
 
 # Endpoint URL for the notification system. If you the driver you are using
 # doesnot require any URL just comment it or use none (string value)
-#endpoint = <None>
+#endpoint = localhost
 
 # Username to authenticate against the notification system. If the driver you
 # are using doesnot require any authentications comment or use None (string

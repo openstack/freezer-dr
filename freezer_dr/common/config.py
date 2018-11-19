@@ -151,7 +151,7 @@ _NOTIFIERS = [
                     'StandardEmail and freezer_dr.notifiers.drivers.default.'
                     'slack.slack.SlackNotifier'),
     cfg.StrOpt('endpoint',
-               default=None,
+               default='localhost',
                dest='endpoint',
                help='Endpoint URL for the notification system. If you the '
                     'driver you are using doesnot require any URL just comment'
