@@ -1,0 +1,6 @@
+pkg-config [platform:dpkg platform:suse]
+pkgconfig [platform:redhat]
+libvirt-dev [platform:dpkg]
+libvirt-devel [platform:rpm]
+app-emulation/libvirt [platform:gentoo]
+libvirt-python [platform:rpm]
