@@ -12,11 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import abc
-import six
 
 
-@six.add_metaclass(abc.ABCMeta)
-class EvacuatorBaseDriver(object):
+class EvacuatorBaseDriver(object, metaclass=abc.ABCMeta):
     """
     Abstract class for all evacuation drivers should implement to have
     a unified interface

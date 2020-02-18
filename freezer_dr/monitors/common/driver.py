@@ -13,15 +13,13 @@
 # limitations under the License.
 
 import abc
-import six
 
 from oslo_config import cfg
 
 CONF = cfg.CONF
 
 
-@six.add_metaclass(abc.ABCMeta)
-class MonitorBaseDriver(object):
+class MonitorBaseDriver(object, metaclass=abc.ABCMeta):
     """
     Abstract class that all monitoring plugins should implement to have a
     unified interface and as many plugins as we want...

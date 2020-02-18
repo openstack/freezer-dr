@@ -16,9 +16,8 @@ from freezer_dr.notifiers.common.driver import NotifierBaseDriver
 import json
 from oslo_log import log
 import requests
-from six.moves import urllib
 import time
-
+import urllib.parse
 
 LOG = log.getLogger(__name__)
 

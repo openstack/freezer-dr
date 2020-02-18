@@ -12,11 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import abc
-import six
 
 
-@six.add_metaclass(abc.ABCMeta)
-class NotifierBaseDriver(object):
+class NotifierBaseDriver(object, metaclass=abc.ABCMeta):
     """ Used to notify admins/users at any stage that an error happened or
     process completed or something went wrong !
     """

@@ -15,11 +15,9 @@
 """Abstract fencer"""
 
 import abc
-import six
 
 
-@six.add_metaclass(abc.ABCMeta)
-class FencerBaseDriver(object):
+class FencerBaseDriver(object, metaclass=abc.ABCMeta):
 
     """Abstract class that all fencer plugins.
 
