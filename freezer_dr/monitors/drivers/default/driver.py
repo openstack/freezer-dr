@@ -14,15 +14,15 @@
 from freezer_dr.common.osclient import OSClient
 from freezer_dr.monitors.common.driver import MonitorBaseDriver
 
-from httplib import HTTPConnection
-from httplib import HTTPSConnection
-from httplib import socket
+from http.client import HTTPConnection
+from http.client import HTTPSConnection
+from http.client import socket
 
 from oslo_config import cfg
 from oslo_log import log
 from time import sleep
 
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 CONF = cfg.CONF
 LOG = log.getLogger(__name__)

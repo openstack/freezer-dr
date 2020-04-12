@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import httplib
+import http.client
 import time
-import urlparse
+import urllib.parse
 
 from monascaclient import client
 from oslo_config import cfg
@@ -29,9 +29,11 @@ LOG = log.getLogger(__name__)
 
 class MonascaDriver(driver.MonitorBaseDriver):
     """Monasca monitoring driver to monitor compute nodes. It makes use of
-    Monasca to monitor the compute nodes. Metric information needed. 'hostname'
-     must be used in dimensions to filter the values in alarms. You need to
-     define alarms for all hosts with the required metrics."""
+       Monasca to monitor the compute nodes. Metric information
+       needed. 'hostname' must be used in dimensions to filter the
+       values in alarms. You need to define alarms for all hosts with
+       the required metrics.
+    """
 
     _OPTS = [
         cfg.StrOpt('keystone_url',
@@ -131,20 +133,21 @@ class MonascaDriver(driver.MonitorBaseDriver):
 
     def get_data(self):
         """This function returns monitoring data from Monasca. It calls
-         _get_raw_data to get raw data and then process these data returns
-        a normalized dict
-        :return: doct contains:
-        {
-            hostname1: {
-                metric_name1: ['Ok', 'ALARM', 'UNDETERMINED']
-                metric_name2: ['OK', 'OK', 'OK']
-            },
-            hostname2: {
-                metric_name1: ['Ok', 'ALARM', 'OK']
-                metric_name2: ['ALARM', 'UNDETERMINED', 'OK']
-            }
-        }
-        """
+           _get_raw_data to get raw data and then process these data returns
+           a normalized dict
+           :return: dict contains::
+
+                    {
+                        hostname1: {
+                            metric_name1: ['Ok', 'ALARM', 'UNDETERMINED']
+                            metric_name2: ['OK', 'OK', 'OK']
+                        },
+                        hostname2: {
+                            metric_name1: ['Ok', 'ALARM', 'OK']
+                            metric_name2: ['ALARM', 'UNDETERMINED', 'OK']
+                        }
+                    }
+           """
         data = self._get_raw_data()
         data2 = {}
         for host, metric_results in data.items():
@@ -183,10 +186,10 @@ class MonascaDriver(driver.MonitorBaseDriver):
 
     def analyze_nodes(self, nodes):
         """It will check if the nodes are in 'OK' state or not. If not they
-        will considered down. We have three states as follow:
-            1. OK
-            2. ALARM
-            3. UNDEFINED
+           will considered down. We have three states as follow:
+           1. OK
+           2. ALARM
+           3. UNDEFINED
         """
         # @todo(szaher) use list comprehension instead of loops
         # list below is correct and should return the extact same value like
@@ -267,16 +270,16 @@ class MonascaDriver(driver.MonitorBaseDriver):
         return eval(aggregate)
 
     def is_alive(self):
-        url = urlparse.urlparse(self.conf.monasca_url)
+        url = urllib.parse.urlparse(self.conf.monasca_url)
         if url.scheme == 'https':
-            http_connector = httplib.HTTPSConnection
+            http_connector = http.client.HTTPSConnection
         else:
-            http_connector = httplib.HTTPConnection
+            http_connector = http.client.HTTPConnection
         try:
             connection = http_connector(host=url.netloc)
             connection.request('HEAD', url=url.path)
             response = connection.getresponse()
-        except httplib.socket.error:
+        except http.client.socket.error:
             return False
         try:
             if getattr(response, 'status') in [200, 401]:
