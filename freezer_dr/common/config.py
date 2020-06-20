@@ -223,16 +223,6 @@ def build_os_options():
                    help='User\'s domain name. Defaults to '
                         'env[OS_USER_DOMAIN_NAME].',
                    dest='os_user_domain_name'),
-        cfg.StrOpt('os-tenant-name',
-                   default=env('OS_TENANT_NAME'),
-                   help='Tenant to request authorization on. Defaults to '
-                        'env[OS_TENANT_NAME].',
-                   dest='os_tenant_name'),
-        cfg.StrOpt('os-tenant-id',
-                   default=env('OS_TENANT_ID'),
-                   help='Tenant to request authorization on. Defaults to '
-                        'env[OS_TENANT_ID].',
-                   dest='os_tenant_id'),
         cfg.StrOpt('os-auth-url',
                    default=env('OS_AUTH_URL'),
                    help='Specify the Identity endpoint to use for '
