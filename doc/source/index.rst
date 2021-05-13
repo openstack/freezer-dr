@@ -10,6 +10,15 @@ all running instances on this compute node, finally freezer-dr will notify all
 users who have workload/instances running on this compute node as well as will
 notify the cloud administrators.
 
+For Contributors
+================
+
+* If you are a new contributor to freezer-dr please refer: :doc:`contributor/contributing`
+
+  .. toctree::
+     :hidden:
+
+     contributor/contributing
 
 Indices and tables
 ==================
