@@ -1,6 +1,0 @@
----
-upgrade:
-  - |
-    Python 2.7 support has been dropped. Last release of freezer-dr
-    to support py2.7 is OpenStack Train. The minimum version of Python now
-    supported by freezer-dr is Python 3.6.
